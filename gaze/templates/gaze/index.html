@@ -16,23 +16,6 @@
   <script>
     // Replace the key below with your Roboflow publishable key
     var publishable_key = "{{ ROBOFLOW_API_KEY }}";
-
-    var player;
-
-    function onYouTubeIframeAPIReady() {
-      player = new YT.Player('myYoutubeVideo', {
-          events: {
-              'onStateChange': onPlayerStateChange
-          }
-      });
-    }
-
-    // When the player's state changes, this will be called.
-    function onPlayerStateChange(event) {
-      if (event.data == YT.PlayerState.PLAYING) {
-          videoState = "playing";
-      }
-    }
   </script>
 </head>
 
@@ -49,11 +32,6 @@
       </div>
     </div>
     
-
-    <!--
-    <iframe id="myYoutubeVideo" width="1120" height="630" src="https://www.youtube.com/embed/LDoJNymbU1Q?enablejsapi=1" frameborder="0"></iframe>
-    -->
-
 
     <p id="loading">Loading...</p>
 
@@ -104,7 +82,6 @@
     <!-- Load our application logic -->
     <script src="{{ url_for('gaze.static', filename='script.js') }}"></script>
   </div>
-  <script src="https://www.youtube.com/iframe_api"></script>
 </body>
 
 </html>

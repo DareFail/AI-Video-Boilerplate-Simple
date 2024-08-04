@@ -133,8 +133,6 @@ function drawBoundingBoxes(predictions, ctx) {
 
     if (gazeCoords == "NONE") {
       document.getElementById("looking").innerHTML = "Off Screen";
-      document.body.style.filter = 'blur(20px)';
-      pauseVideo();
     }
     else {
       ctx.beginPath();
@@ -146,8 +144,6 @@ function drawBoundingBoxes(predictions, ctx) {
       ctx.stroke();
 
       document.getElementById("looking").innerHTML = "On Screen";
-      document.body.style.filter = 'blur(0px)';
-      playVideo();
     }
 
   }
@@ -337,18 +333,4 @@ function estimateCanvasCoordinates(eyeX, eyeY, pitch, yaw) {
   }
 
   return {x: canvasX, y: canvasY};
-}
-
-function playVideo() {
-  if (videoState == "paused") {
-    videoState = "playing";
-    player.playVideo(); // Will start video
-  }
-} 
-
-function pauseVideo() {
-  if (videoState == "playing") {
-    videoState = "paused";
-    player.pauseVideo(); // Will pause the video
-  }
 }
