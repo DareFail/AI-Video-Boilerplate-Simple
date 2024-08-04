@@ -23,6 +23,7 @@
     <h1>Template</h1>
     <p>Mess with it at: <a href="https://github.com/DareFail/AI-Video-Boilerplate">https://github.com/DareFail/AI-Video-Boilerplate</a></p>
 
+
     <div id="videoSource">
       <div>
           <input type="file" id="uploadedFile" accept=".mp4, .mov" onchange="handleFileSelect(event)">
@@ -30,17 +31,21 @@
       <div class="marginTop">
           <button onclick="webcamInference()">Start Webcam</button>
       </div>
+
+      <div class="marginTop">
+        <img src="{{ url_for('template.static', filename='preview.gif') }}" />
+      </div>
     </div>
 
     <p id="loading">Loading...</p>
 
     <!-- The canvas below is required -->
 
-    <section class="infer-widget">
+    <div class="infer-widget">
       <canvas width="640" height="480" id="video_canvas"></canvas>
-    </section>
+    </div>
 
-    <section id="settings">
+    <div id="settings">
       <div>
         <label for="mirror">Flip Video (Mirror)</label><br>
         <input type="checkbox" id="mirror" name="mirror" checked onclick="changeMirror()" />
@@ -50,7 +55,7 @@
         <label for="confidence">Prediction Confidence %</label><br>
         <input type="range" min="1" max="100" value="60" class="slider" id="confidence">
       </div>
-    </section>
+    </div>
     
     <!-- Load our application logic -->
     <script src="{{ url_for('template.static', filename='script.js') }}"></script>

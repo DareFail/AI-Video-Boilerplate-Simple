@@ -48,6 +48,9 @@
       <div class="marginTop">
           <button onclick="webcamInference()">Start Webcam</button>
       </div>
+      <div class="marginTop">
+        <img src="{{ url_for('privasee.static', filename='preview.gif') }}" />
+      </div>
     </div>
     
 
@@ -58,9 +61,9 @@
 
     <!-- The canvas below is required -->
 
-    <section class="infer-widget">
+    <div class="infer-widget">
       <canvas width="640" height="480" id="video_canvas"></canvas>
-    </section>
+    </div>
 
 
     <div>
@@ -73,7 +76,7 @@
         Looking: <span id="looking"></span>
     </div>
 
-    <section id="settings">
+    <div id="settings">
       <div>
         <label for="mirror">Flip Video (Mirror)</label><br>
         <input type="checkbox" id="mirror" name="mirror" checked onclick="changeMirror()" />
@@ -98,7 +101,7 @@
         <label for="verticalOffset">Dot Size</label><br>
         <input type="range" min="1" max="500" value="5" class="slider" id="dotSize" onchange="changeDotSize()">
       </div>
-    </section>
+    </div>
     
     <!-- Load our application logic -->
     <script src="{{ url_for('privasee.static', filename='script.js') }}"></script>
