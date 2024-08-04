@@ -2,7 +2,7 @@
 
   This is a completely free Live AI Video boilerplate for you to play with.  
 
-Hosted on Heroku for a live demo here: [https://ai-video-boilerplate-f751f0105bca.herokuapp.com/gaze/](https://ai-video-boilerplate-f751f0105bca.herokuapp.com/gaze/)
+Hosted on Heroku for a live demo here: [https://simpleAI.darefail.com/gaze/](simpleAI.darefail.com/gaze/)
 
 ![demo](https://github.com/user-attachments/assets/fe61782f-acc9-42b0-9023-78bf97153718)
 
@@ -52,7 +52,7 @@ ROBOFLOW_API_KEY="YOUR_ROBOFLOW_KEY_HERE"
 
 ```sh
 
-git clone https://github.com/DareFail/AI-Video-Boilerplate.git
+git clone https://github.com/DareFail/AI-Video-Boilerplate-Simple.git
 
 cd AI-Video-Boilerplate
 
@@ -181,4 +181,4 @@ Youtube: [How to Video coming soon](https://www.youtube.com/@darefail)
 
   
 
-Project Link: [https://github.com/DareFail/AI-Video-Boilerplate](https://github.com/DareFail/AI-Video-Boilerplate)
+Project Link: [https://github.com/DareFail/AI-Video-Boilerplate-Simple](https://github.com/DareFail/AI-Video-Boilerplate-Simple)
