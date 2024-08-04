@@ -151,7 +151,7 @@ and
 -   Replit: Can be used as is, just keep the .replit file
 -  Digital Ocean
 -  Vercel
--  Heroku
+-  Heroku: Can be used as is, just keep the current Procfile
   
 
 ## Acknowledgements
