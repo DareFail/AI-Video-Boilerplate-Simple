@@ -4,7 +4,7 @@
 
 Hosted on Replit for a live demo here: [https://replit.com/@DareFail/AI-Video-Boilerplate](https://replit.com/@DareFail/AI-Video-Boilerplate)
 
-  
+![demo](https://github.com/user-attachments/assets/fe61782f-acc9-42b0-9023-78bf97153718)
 
 ## Features
 
