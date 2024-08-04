@@ -2,7 +2,7 @@
 
   This is a completely free Live AI Video boilerplate for you to play with.  
 
-Hosted on Replit for a live demo here: [https://replit.com/@DareFail/AI-Video-Boilerplate](https://replit.com/@DareFail/AI-Video-Boilerplate)
+Hosted on Heroku for a live demo here: [https://ai-video-boilerplate-f751f0105bca.herokuapp.com/gaze/](https://ai-video-boilerplate-f751f0105bca.herokuapp.com/gaze/)
 
 ![demo](https://github.com/user-attachments/assets/fe61782f-acc9-42b0-9023-78bf97153718)
 
