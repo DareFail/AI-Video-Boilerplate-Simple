@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>AI Video Boilerplate</title>
+
+  <!-- Load roboflow.js, the script that will handle loading and running our computer vision model in the browser -->
+  <script src="https://cdn.jsdelivr.net/npm/inferencejs"></script>
+  
+  <link rel="stylesheet" href="{{ url_for('gaze.static', filename='styles.css') }}" />
+
+  <script>
+    // Replace the key below with your Roboflow publishable key
+    var publishable_key = "{{ ROBOFLOW_API_KEY }}";
+
+    var player;
+
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('myYoutubeVideo', {
+          events: {
+              'onStateChange': onPlayerStateChange
+          }
+      });
+    }
+
+    // When the player's state changes, this will be called.
+    function onPlayerStateChange(event) {
+      if (event.data == YT.PlayerState.PLAYING) {
+          videoState = "playing";
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    <h1>AI-video-boilerplate</h1>
+
+    <div id="videoSource">
+      <div>
+        <input type="file" id="uploadedFile" accept=".mp4, .mov" onchange="handleFileSelect(event)">
+      </div>
+      <div class="marginTop">
+          <button onclick="webcamInference()">Start Webcam</button>
+      </div>
+    </div>
+    
+
+    <!--
+    <iframe id="myYoutubeVideo" width="1120" height="630" src="https://www.youtube.com/embed/LDoJNymbU1Q?enablejsapi=1" frameborder="0"></iframe>
+    -->
+
+
+    <p id="loading">Loading...</p>
+
+    <!-- The canvas below is required -->
+
+    <section class="infer-widget">
+      <canvas width="640" height="480" id="video_canvas"></canvas>
+    </section>
+
+
+    <div>
+        pitchValue: <span id="pitchValue"></span>
+    </div>
+    <div>
+        yawValue: <span id="yawValue"></span>
+    </div>
+    <div>
+        Looking: <span id="looking"></span>
+    </div>
+
+    <section id="settings">
+      <div>
+        <label for="mirror">Flip Video (Mirror)</label><br>
+        <input type="checkbox" id="mirror" name="mirror" checked onclick="changeMirror()" />
+      </div>
+
+      <div>
+        <label for="sensitivity">Sensitivity</label><br>
+        <input type="range" min="1" max="50" value="25" class="slider" id="sensitivity" onchange="changeSensitivity()">
+      </div>
+
+      <div>
+        <label for="verticalOffset">Vertical Offset (Adjust until the dot is on your eyes when you stare at your eyes)</label><br>
+        <input type="range" min="-500" max="1000" value="400" class="slider" id="verticalOffset" onchange="changeVerticalOffset()">
+      </div>
+
+      <div>
+        <label for="filterStrength">Reduce Jitter</label><br>
+        <input type="range" min="1" max="99.9" value="91" class="slider" id="filterStrength" onchange="changeFilterStrength()">
+      </div>
+
+      <div>
+        <label for="verticalOffset">Dot Size</label><br>
+        <input type="range" min="1" max="500" value="5" class="slider" id="dotSize" onchange="changeDotSize()">
+      </div>
+    </section>
+
+    <!-- Load our application logic -->
+    <script src="{{ url_for('gaze.static', filename='script.js') }}"></script>
+  </div>
+  <script src="https://www.youtube.com/iframe_api"></script>
+</body>
+
+</html>

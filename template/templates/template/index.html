@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>AI Video Boilerplate</title>
+
+  <!-- Load roboflow.js, the script that will handle loading and running our computer vision model in the browser -->
+  <script src="https://cdn.jsdelivr.net/npm/inferencejs"></script>
+  
+  <link rel="stylesheet" href="{{ url_for('template.static', filename='styles.css') }}" />
+
+  <script>
+    var publishable_key = "{{ ROBOFLOW_API_KEY }}";
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    <h1>AI-video-boilerplate</h1>
+
+    <div id="videoSource">
+      <div>
+          <input type="file" id="uploadedFile" accept=".mp4, .mov" onchange="handleFileSelect(event)">
+      </div>
+      <div class="marginTop">
+          <button onclick="webcamInference()">Start Webcam</button>
+      </div>
+    </div>
+
+    <p id="loading">Loading...</p>
+
+    <!-- The canvas below is required -->
+
+    <section class="infer-widget">
+      <canvas width="640" height="480" id="video_canvas"></canvas>
+    </section>
+
+    <section id="settings">
+      <div>
+        <label for="mirror">Flip Video (Mirror)</label><br>
+        <input type="checkbox" id="mirror" name="mirror" checked onclick="changeMirror()" />
+      </div>
+
+      <div>
+        <label for="confidence">Prediction Confidence %</label><br>
+        <input type="range" min="1" max="100" value="60" class="slider" id="confidence">
+      </div>
+    </section>
+    
+    <!-- Load our application logic -->
+    <script src="{{ url_for('template.static', filename='script.js') }}"></script>
+  </div>
+</body>
+
+</html>
