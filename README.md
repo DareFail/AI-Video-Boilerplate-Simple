@@ -148,7 +148,7 @@ and
 
 ## Easy Deployment
 
--   Replit
+-   Replit: Can be used as is, just keep the .replit file
 -  Digital Ocean
 -  Vercel
 -  Heroku
