@@ -4,6 +4,7 @@
 
 Hosted on Heroku for a live demo here: [https://simpleAI.darefail.com/](https://simpleAI.darefail.com/)
 
+
 ![demo](https://github.com/user-attachments/assets/fe61782f-acc9-42b0-9023-78bf97153718)
 
 ## Features
