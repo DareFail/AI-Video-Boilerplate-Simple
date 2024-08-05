@@ -39,11 +39,25 @@
 <body>
   <div class="container">
     <h1>Priva-see</h1>
-    <p>Mess with it at: <a href="https://github.com/DareFail/AI-Video-Boilerplate-Simple">https://github.com/DareFail/AI-Video-Boilerplate-Simple</a></p>
 
-    <div id="videoSource">
+    <div>
+      <div>
+        Description Here
+      </div>
+      <div>
+        All demos: <a href="https://simpleAI.darefail.com">https://simpleAI.darefail.com</a>
+      </div>
+      <div>
+        Mess with it at: <a href="https://github.com/DareFail/AI-Video-Boilerplate-Simple">https://github.com/DareFail/AI-Video-Boilerplate-Simple</a>
+      </div>
+    </div>
+
+    <div class="marginTop" id="videoSource">
       <div>
         <input type="file" id="uploadedFile" accept=".mp4, .mov" onchange="handleFileSelect(event)">
+      </div>
+      <div class="marginTop">
+        <button onclick="screenInference()">Use Screen</button>
       </div>
       <div class="marginTop">
           <button onclick="webcamInference()">Start Webcam</button>
@@ -83,22 +97,22 @@
       </div>
 
       <div>
-        <label for="sensitivity">Sensitivity</label><br>
+        <label for="sensitivity">Sensitivity <span id="sensitivityValue"></span></label><br>
         <input type="range" min="1" max="50" value="25" class="slider" id="sensitivity" onchange="changeSensitivity()">
       </div>
 
       <div>
-        <label for="verticalOffset">Vertical Offset (Adjust until the dot is on your eyes when you stare at your eyes)</label><br>
+        <label for="verticalOffset">Vertical Offset (Adjust until the dot is on your eyes when you stare at your eyes) <span id="verticalOffsetValue"></span></label><br>
         <input type="range" min="-500" max="1000" value="400" class="slider" id="verticalOffset" onchange="changeVerticalOffset()">
       </div>
 
       <div>
-        <label for="filterStrength">Reduce Jitter</label><br>
+        <label for="filterStrength">Reduce Jitter <span id="filterStrengthValue"></span></label><br>
         <input type="range" min="1" max="99.9" value="91" class="slider" id="filterStrength" onchange="changeFilterStrength()">
       </div>
 
       <div>
-        <label for="verticalOffset">Dot Size</label><br>
+        <label for="dotSize">Dot Size <span id="dotSizeValue"></span></label><br>
         <input type="range" min="1" max="500" value="5" class="slider" id="dotSize" onchange="changeDotSize()">
       </div>
     </div>

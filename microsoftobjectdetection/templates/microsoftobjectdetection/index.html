@@ -11,7 +11,7 @@
   <!-- Load roboflow.js, the script that will handle loading and running our computer vision model in the browser -->
   <script src="https://cdn.jsdelivr.net/npm/inferencejs"></script>
   
-  <link rel="stylesheet" href="{{ url_for('template.static', filename='styles.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('microsoftobjectdetection.static', filename='styles.css') }}" />
 
   <script>
     var publishable_key = "{{ ROBOFLOW_API_KEY }}";
@@ -20,10 +20,11 @@
 
 <body>
   <div class="container">
-    <h1>Template</h1>
+    <h1>General Object Detection</h1>
+    
     <div>
       <div>
-        Description Here
+        Detects objects in a video using Microsoft-Coco
       </div>
       <div>
         All demos: <a href="https://simpleAI.darefail.com">https://simpleAI.darefail.com</a>
@@ -71,7 +72,7 @@
     </div>
     
     <!-- Load our application logic -->
-    <script src="{{ url_for('template.static', filename='script.js') }}"></script>
+    <script src="{{ url_for('microsoftobjectdetection.static', filename='script.js') }}"></script>
   </div>
 </body>
 

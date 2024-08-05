@@ -246,3 +246,11 @@ function changeConfidence() {
   user_confidence = document.getElementById("confidence").value / 100;
   document.getElementById("confidenceValue").innerHTML = document.getElementById("confidence").value;
 }
+
+function changeModelName() {
+  model_name = document.getElementById("modelName").value;
+}
+
+function changeVersionNumber() {
+  model_version = parseInt(document.getElementById("versionNumber").value);
+}

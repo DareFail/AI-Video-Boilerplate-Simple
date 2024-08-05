@@ -10,7 +10,7 @@ Hosted on Heroku for a live demo here: [https://simpleAI.darefail.com/gaze/](htt
 
 -  **Backend**: Simple Flask sever, just serves files.
 
--  **Live Video**: From your webcam or a local .mp4 or .mov file
+-  **Live Video**: From your webcam, desktop, browser tab, or a local .mp4 or .mov file
 
 -  **AI Vision**: Integrated with Roboflow (sponsored project)
 
@@ -151,8 +151,14 @@ and
 -  Replit: Can be used as is, just keep the .replit file
 -  Digital Ocean
 -  Vercel
--  Heroku: Can be used as is, just keep the current Procfile
-  
+-  Heroku: Enter the following commands and keep the Procfile
+
+ ```
+heroku buildpacks:clear                        
+heroku buildpacks:add https://github.com/moneymeets/python-poetry-buildpack.git
+heroku buildpacks:add heroku/python
+heroku config:set PYTHON_RUNTIME_VERSION=3.10.0
+```
 
 ## Acknowledgements
 

@@ -149,6 +149,7 @@ function drawBoundingBoxes(predictions, ctx) {
   }
 }
 
+
 function handleFileSelect(evt) {
   var loading = document.getElementById("loading");
   loading.style.display = "block";
@@ -158,6 +159,58 @@ function handleFileSelect(evt) {
 
   video = document.createElement("video");
   video.src = URL.createObjectURL(file);
+
+  document.getElementById("mirror").checked = false;
+  shouldMirrorVideo = false;
+
+  handleInference(video);
+
+}
+
+function webcamInference() {
+  // Ask for webcam permissions, then run main application.
+  var loading = document.getElementById("loading");
+  loading.style.display = "block";
+
+  navigator.mediaDevices
+    .getUserMedia({ 
+      video: { facingMode: "environment" },
+      audio: false
+    })
+    .then(function(stream) {
+      video = document.createElement("video");
+      video.srcObject = stream;
+      handleInference(video);
+    })
+    .catch(function(err) {
+      console.log(err);
+    });
+}
+
+function screenInference() {
+  // Ask for webcam permissions, then run main application.
+  var loading = document.getElementById("loading");
+  loading.style.display = "block";
+
+  navigator.mediaDevices
+    .getDisplayMedia({ 
+      audio: false
+    })
+    .then(function(stream) {
+      video = document.createElement("video");
+      video.srcObject = stream;
+      
+      document.getElementById("mirror").checked = false;
+      shouldMirrorVideo = false;
+
+      handleInference(video);
+    })
+    .catch(function(err) {
+      console.log(err);
+    });
+}
+
+function handleInference(video) {
   video.id = "webcam";
 
   // hide video until the web stream is ready
@@ -175,6 +228,8 @@ function handleFileSelect(evt) {
     height = video.videoHeight;
     width = video.videoWidth;
 
+    // scale down video by 0.75
+
     video.width = width;
     video.height = height;
     video.style.width = 640 + "px";
@@ -185,8 +240,6 @@ function handleFileSelect(evt) {
     canvas.width = width;
     canvas.height = height;
 
-    document.getElementById("mirror").checked = false;
-    shouldMirrorVideo = false;
     document.getElementById("video_canvas").style.display = "block";
   };
 
@@ -200,69 +253,6 @@ function handleFileSelect(evt) {
       // Start inference
       detectFrame();
     });
-
-}
-      
-
-function webcamInference() {
-  // Ask for webcam permissions, then run main application.
-  var loading = document.getElementById("loading");
-  loading.style.display = "block";
-
-  navigator.mediaDevices
-    .getUserMedia({ 
-      video: { facingMode: "environment" },
-      audio: false
-    })
-    .then(function(stream) {
-      video = document.createElement("video");
-      video.srcObject = stream;
-      video.id = "webcam";
-
-      // hide video until the web stream is ready
-      video.style.display = "none";
-      video.setAttribute("playsinline", "");
-
-      document.getElementById("video_canvas").after(video);
-
-      video.onloadedmetadata = function() {
-        video.play();
-      }
-
-      // on full load, set the video height and width
-      video.onplay = function() {
-        height = video.videoHeight;
-        width = video.videoWidth;
-
-        // scale down video by 0.75
-
-        video.width = width;
-        video.height = height;
-        video.style.width = 640 + "px";
-        video.style.height = 480 + "px";
-
-        canvas.style.width = 640 + "px";
-        canvas.style.height = 480 + "px";
-        canvas.width = width;
-        canvas.height = height;
-
-        document.getElementById("video_canvas").style.display = "block";
-      };
-
-      ctx.scale(1, 1);
-
-      // Load the Roboflow model using the publishable_key set in index.html
-      // and the model name and version set at the top of this file
-      inferEngine.startWorker(model_name, model_version, publishable_key, [{ scoreThreshold: confidence_threshold }])
-        .then((id) => {
-          modelWorkerId = id;
-          // Start inference
-          detectFrame();
-        });
-    })
-    .catch(function(err) {
-      console.log(err);
-    });
 }
 
 function changeMirror () {
@@ -271,22 +261,22 @@ function changeMirror () {
 
 function changeFilterStrength() {
   filterStrength = document.getElementById("filterStrength").value / 100;
+  document.getElementById("filterStrengthValue").innerHTML = document.getElementById("filterStrength").value;
 }
 
 function changeSensitivity() {
-  sensitivity = document.getElementById("filterStrength").value;
+  sensitivity = document.getElementById("sensitivity").value;
+  document.getElementById("sensitivityValue").innerHTML = document.getElementById("sensitivity").value;
 }
 
 function changeVerticalOffset() {
   verticalOffset = document.getElementById("verticalOffset").value;
-}
-
-function changeHorizontalOffset() {
-  horizontalOffset = document.getElementById("horizontalOffset").value;
+  document.getElementById("verticalOffsetValue").innerHTML = document.getElementById("verticalOffset").value;
 }
 
 function changeDotSize() {
   dotSize = document.getElementById("dotSize").value;
+  document.getElementById("dotSizeValue").innerHTML = document.getElementById("dotSize").value;
 }
 
 function estimateCanvasCoordinates(eyeX, eyeY, pitch, yaw) {
