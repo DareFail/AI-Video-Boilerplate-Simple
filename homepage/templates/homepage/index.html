@@ -7,6 +7,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>AI Video Boilerplate</title>
+
+  {% if ANALYTICS_ID %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ ANALYTICS_ID }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', '{{ ANALYTICS_ID }}');
+    </script>
+  {% endif %}
   
   <link rel="stylesheet" href="{{ url_for('homepage.static', filename='styles.css') }}" />
 
