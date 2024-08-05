@@ -2,7 +2,7 @@
 
   This is a completely free Live AI Video boilerplate for you to play with.  
 
-Hosted on Heroku for a live demo here: [https://simpleAI.darefail.com/gaze/](https://simpleAI.darefail.com/gaze/)
+Hosted on Heroku for a live demo here: [https://simpleAI.darefail.com/](https://simpleAI.darefail.com/)
 
 ![demo](https://github.com/user-attachments/assets/fe61782f-acc9-42b0-9023-78bf97153718)
 
