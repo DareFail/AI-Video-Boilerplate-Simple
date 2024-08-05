@@ -1,4 +1,4 @@
-# AI-video-boilerplate
+# AI-video-boilerplate-simple
 
   This is a completely free Live AI Video boilerplate for you to play with.  
 
