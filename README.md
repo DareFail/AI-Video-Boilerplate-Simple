@@ -1,6 +1,6 @@
 # AI-video-boilerplate-simple
 
-  This is a completely free Live AI Video boilerplate for you to play with.  
+  This is a completely free Live AI Video boilerplate (Simple) for you to play with.  
 
 Hosted on Heroku for a live demo here: [https://simpleAI.darefail.com/](https://simpleAI.darefail.com/)
 
