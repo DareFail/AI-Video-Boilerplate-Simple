@@ -11,7 +11,7 @@ Also, check out the AI Video Boilerplate for Chrome Extensions: [https://github.
 
 ## Features
 
--  **Backend**: Simple Flask sever, just serves files.
+-  **Backend**: Simple Flask server, just serves files.
 
 -  **Live Video**: From your webcam, desktop, browser tab, or a local .mp4 or .mov file
 
