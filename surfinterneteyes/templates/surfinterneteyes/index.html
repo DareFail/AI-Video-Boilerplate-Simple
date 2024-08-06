@@ -34,24 +34,44 @@
   <!-- Load roboflow.js, the script that will handle loading and running our computer vision model in the browser -->
   <script src="https://cdn.jsdelivr.net/npm/inferencejs"></script>
   
-  <link rel="stylesheet" href="{{ url_for('gaze.static', filename='styles.css') }}" />
+  <!-- jQuery -->
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+  <!-- jQuery UI theme or Bootstrap (optional, if you create a custom theme) -->
+  <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.0/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+
+  <!-- jQuery UI position utility (optional, if you position the keyboard yourself) -->
+  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
+
+  <!-- keyboard widget css & script -->
+  <link rel="stylesheet" type="text/css" href="https://mottie.github.io/Keyboard/css/keyboard.css">
+  <script type="text/javascript" src="https://mottie.github.io/Keyboard/js/jquery.keyboard.js"></script>
+
+  <script type="text/javascript" src="https://mottie.github.io/Keyboard/js/jquery.keyboard.extension-typing.js"></script>
+
+  
+  <link rel="stylesheet" href="{{ url_for('surfinterneteyes.static', filename='styles.css') }}" />
 
   <script>
     // Replace the key below with your Roboflow publishable key
     var publishable_key = "{{ ROBOFLOW_API_KEY }}";
+
   </script>
 </head>
 
 <body>
   <div class="container">
-    <h1>Gaze Detection Demo</h1>
+    <h1>Surf the internet with your eyes</h1>
 
-    <div> 
+    <div>
       <div>
-        Control a dot on the screen with just your eyes and a webcam/local video.
+        Start the webcam. When you blink once it is a mouse click. Blink twice within a second to "hold down" the mouse and blink twice within a second again to release.
       </div>
       <div>
         All demos: <a href="https://simpleAI.darefail.com">https://simpleAI.darefail.com</a>
+      </div>
+      <div>
+        <b>Bonus</b> Chrome Extension: <a href="https://github.com/DareFail/AI-Video-Boilerplate-Chrome">https://github.com/DareFail/AI-Video-Boilerplate-Chrome</a>
       </div>
       <div>
         Mess with it at: <a href="https://github.com/DareFail/AI-Video-Boilerplate-Simple">https://github.com/DareFail/AI-Video-Boilerplate-Simple</a>
@@ -68,11 +88,13 @@
       <div class="marginTop">
           <button onclick="webcamInference()">Start Webcam</button>
       </div>
-      <div class="marginTop">
-        <img src="{{ url_for('gaze.static', filename='preview.gif') }}" />
-      </div>
     </div>
     
+    <div class="marginTop" style="margin-bottom: 2000px;">
+      <div id="wrap">
+        <input id="keyboard" type="text" />
+      </div>
+    </div>
 
     <p id="loading">Loading...</p>
 
@@ -121,9 +143,24 @@
     </div>
 
 
+
+
+    
     <!-- Load our application logic -->
-    <script src="{{ url_for('gaze.static', filename='script.js') }}"></script>
+    <script src="{{ url_for('surfinterneteyes.static', filename='script.js') }}"></script>
+    <script>
+      $(document).ready(function(){
+        $('#keyboard')
+          .keyboard()
+          // activate the typing extension
+          .addTyping({
+            showTyping: true,
+            delay: 250
+          });
+      });
+    </script>
   </div>
+
 </body>
 
 </html>

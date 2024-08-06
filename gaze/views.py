@@ -10,3 +10,11 @@ def index():
         ROBOFLOW_API_KEY=os.environ.get("ROBOFLOW_API_KEY"),
         ANALYTICS_ID=os.environ.get("ANALYTICS_ID")
     )
+
+
+@gaze.route('/how/')
+def how():
+    return render_template(
+        'gaze/how.html', 
+        ANALYTICS_ID=os.environ.get("ANALYTICS_ID")
+    )
