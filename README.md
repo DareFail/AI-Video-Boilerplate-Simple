@@ -41,7 +41,7 @@ It is an extremely lightweight flask server that can be uploaded to popular clou
 
 ```
 
-ROBOFLOW_API_KEY="YOUR_ROBOFLOW_KEY_HERE"
+ROBOFLOW_API_KEY=YOUR_ROBOFLOW_KEY_HERE
 
 ```
 
