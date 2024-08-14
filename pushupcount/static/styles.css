@@ -111,3 +111,17 @@ img {
   width: 100%;
   max-width: 600px;
 }
+
+.switch-toggle {
+  width: 308px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#squatCountContainer { 
+  display: none;
+}
+
+#situpCountContainer {
+  display: none;
+}

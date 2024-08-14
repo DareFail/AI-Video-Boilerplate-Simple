@@ -12,13 +12,33 @@ var user_confidence = 0.6;
 var confidence_threshold = 0.1;
 var model_name = "push-up-ditection";
 var model_version = 3;
+var model_type = "pushups";
 
-var pushupCount = 0;
-var currentPushupStatus = "push-ups"
+// Pushups
+var countPushup = 0;
+var currentStatusPushup = "push-ups"
 
-const verifyTimes = 10;
-var currentVerify = 0;
-var newPushupStatus = "push-ups";
+const verifyTimesPushup = 10;
+var currentVerifyPushup = 0;
+var newStatusPushup = "push-ups";
+
+// Situps
+var countSitup = 0;
+var currentStatusSitup = "sit-up"
+
+const verifyTimesSitup = 10;
+var currentVerifySitup = 0;
+var newStatusSitup = "sit-up";
+
+// Squats
+var countSquat = 0;
+var currentStatusSquat = "squat-up"
+
+const verifyTimesSquat = 10;
+var currentVerifySquat = 0;
+var newStatusSquat = "squat-up";
+
+
 
 var shouldMirrorVideo = true;
 
@@ -89,77 +109,238 @@ function detectFrame() {
 }
 
 function drawBoundingBoxes(predictions, ctx) {
-  for (var i = 0; i < predictions.length && i < 1; i++) {
-    var confidence = predictions[i].confidence;
 
-    if (confidence < user_confidence) {
-      continue;
-    }
+  if (model_type == "pushups") {
 
-    if (predictions[i].class in bounding_box_colors) {
-      ctx.strokeStyle = bounding_box_colors[predictions[i].class];
-    } else {
-      var color =
-        color_choices[Math.floor(Math.random() * color_choices.length)];
-      ctx.strokeStyle = color;
-      // remove color from choices
-      color_choices.splice(color_choices.indexOf(color), 1);
+    for (var i = 0; i < predictions.length && i < 1; i++) {
+      var confidence = predictions[i].confidence;
+  
+      if (confidence < user_confidence) {
+        continue;
+      }
+  
+      if (predictions[i].class in bounding_box_colors) {
+        ctx.strokeStyle = bounding_box_colors[predictions[i].class];
+      } else {
+        var color =
+          color_choices[Math.floor(Math.random() * color_choices.length)];
+        ctx.strokeStyle = color;
+        // remove color from choices
+        color_choices.splice(color_choices.indexOf(color), 1);
+        
+        bounding_box_colors[predictions[i].class] = color;
+      }
+  
+      var prediction = predictions[i];
+      var x = prediction.bbox.x - prediction.bbox.width / 2;
+      var y = prediction.bbox.y - prediction.bbox.height / 2;
+      var width = prediction.bbox.width;
+      var height = prediction.bbox.height;
+  
+      if (shouldMirrorVideo) {
+        x = video.videoWidth - (x + width);
+      }
+  
+      ctx.rect(x, y, width, height);
+      ctx.fillStyle = "rgba(0, 0, 0, 0)";
+      ctx.fill();
+      ctx.fillStyle = ctx.strokeStyle;
+      ctx.lineWidth = "4";
       
-      bounding_box_colors[predictions[i].class] = color;
-    }
-
-    var prediction = predictions[i];
-    var x = prediction.bbox.x - prediction.bbox.width / 2;
-    var y = prediction.bbox.y - prediction.bbox.height / 2;
-    var width = prediction.bbox.width;
-    var height = prediction.bbox.height;
-
-    if (shouldMirrorVideo) {
-      x = video.videoWidth - (x + width);
-    }
-
-    ctx.rect(x, y, width, height);
-    ctx.fillStyle = "rgba(0, 0, 0, 0)";
-    ctx.fill();
-    ctx.fillStyle = ctx.strokeStyle;
-    ctx.lineWidth = "4";
-    
-    // If video should be mirrored, flip the context only for drawing bbox, leave text
-    if (shouldMirrorVideo) {
-      ctx.save();
-      ctx.scale(-1, 1);
-      ctx.strokeRect(-x-width, y, width, height);
-      ctx.restore();
-    } else {
-      ctx.strokeRect(x, y, width, height);
-    }
-    
-    // Text stays the same regardless of mirroring
-    ctx.font = "25px Arial";
-    ctx.fillText(prediction.class + " " + Math.round(confidence * 100) + "%", x, y - 10);
-
-    if (predictions[i].class == "push-ups") {
-      if (currentVerify >= verifyTimes && currentPushupStatus == "push-downs") {
-        pushupCount = pushupCount + 1;
-        document.getElementById("pushupCount").innerHTML = pushupCount;
-        currentPushupStatus = "push-ups";
-      } else if(newPushupStatus == "push-ups") {
-        currentVerify = currentVerify + 1;
+      // If video should be mirrored, flip the context only for drawing bbox, leave text
+      if (shouldMirrorVideo) {
+        ctx.save();
+        ctx.scale(-1, 1);
+        ctx.strokeRect(-x-width, y, width, height);
+        ctx.restore();
       } else {
-        currentVerify = 0;
-        newPushupStatus = "push-ups";
+        ctx.strokeRect(x, y, width, height);
       }
-    } else if (predictions[i].class == "push-downs") {
-      if (currentVerify >= verifyTimes && currentPushupStatus == "push-ups") {
-        currentPushupStatus = "push-downs";
-      } else if(newPushupStatus == "push-downs") {
-        currentVerify = currentVerify + 1;
-      } else {
-        currentVerify = 0;
-        newPushupStatus = "push-downs";
+      
+      // Text stays the same regardless of mirroring
+      ctx.font = "25px Arial";
+      ctx.fillText(prediction.class + " " + Math.round(confidence * 100) + "%", x, y - 10);
+  
+  
+
+      if (predictions[i].class == "push-ups") {
+        if (currentVerifyPushup >= verifyTimesPushup && currentStatusPushup == "push-downs") {
+          countPushup = countPushup + 1;
+          document.getElementById("pushupCount").innerHTML = countPushup;
+          currentStatusPushup = "push-ups";
+        } else if(newStatusPushup == "push-ups") {
+          currentVerifyPushup = currentVerifyPushup + 1;
+        } else {
+          currentVerifyPushup = 0;
+          newStatusPushup = "push-ups";
+        }
+      } else if (predictions[i].class == "push-downs") {
+        if (currentVerifyPushup >= verifyTimesPushup && currentStatusPushup == "push-ups") {
+          currentStatusPushup = "push-downs";
+        } else if(newStatusPushup == "push-downs") {
+          currentVerifyPushup = currentVerifyPushup + 1;
+        } else {
+          currentVerifyPushup = 0;
+          newStatusPushup = "push-downs";
+        }
       }
     }
+  } else if (model_type == "situps") {
+    let filteredPredictions = predictions.filter(prediction => prediction.class.toLowerCase().includes("sit"));
+
+    for (var i = 0; i < filteredPredictions.length && i < 1; i++) {
+
+      var confidence = filteredPredictions[i].confidence;
+  
+      if (confidence < user_confidence) {
+        continue;
+      }
+  
+      if (filteredPredictions[i].class in bounding_box_colors) {
+        ctx.strokeStyle = bounding_box_colors[filteredPredictions[i].class];
+      } else {
+        var color =
+          color_choices[Math.floor(Math.random() * color_choices.length)];
+        ctx.strokeStyle = color;
+        // remove color from choices
+        color_choices.splice(color_choices.indexOf(color), 1);
+        
+        bounding_box_colors[filteredPredictions[i].class] = color;
+      }
+  
+      var prediction = filteredPredictions[i];
+      var x = prediction.bbox.x - prediction.bbox.width / 2;
+      var y = prediction.bbox.y - prediction.bbox.height / 2;
+      var width = prediction.bbox.width;
+      var height = prediction.bbox.height;
+  
+      if (shouldMirrorVideo) {
+        x = video.videoWidth - (x + width);
+      }
+  
+      ctx.rect(x, y, width, height);
+      ctx.fillStyle = "rgba(0, 0, 0, 0)";
+      ctx.fill();
+      ctx.fillStyle = ctx.strokeStyle;
+      ctx.lineWidth = "4";
+      
+      // If video should be mirrored, flip the context only for drawing bbox, leave text
+      if (shouldMirrorVideo) {
+        ctx.save();
+        ctx.scale(-1, 1);
+        ctx.strokeRect(-x-width, y, width, height);
+        ctx.restore();
+      } else {
+        ctx.strokeRect(x, y, width, height);
+      }
+      
+      // Text stays the same regardless of mirroring
+      ctx.font = "25px Arial";
+      ctx.fillText(prediction.class + " " + Math.round(confidence * 100) + "%", x, y - 10);
+  
+  
+      if (filteredPredictions[i].class == "sit-up") {
+        if (currentVerifySitup >= verifyTimesSitup && currentStatusSitup == "sit-down") {
+          countSitup = countSitup + 1;
+          document.getElementById("situpCount").innerHTML = countSitup;
+          currentStatusSitup = "sit-up";
+        } else if(newStatusSitup == "sit-up") {
+          currentVerifySitup = currentVerifySitup + 1;
+        } else {
+          currentVerifySitup = 0;
+          newStatusSitup = "sit-up";
+        }
+      } else if (filteredPredictions[i].class == "sit-down") {
+        if (currentVerifySitup >= verifyTimesSitup && currentStatusSitup == "sit-up") {
+          currentStatusSitup = "sit-down";
+        } else if(newStatusSitup == "sit-down") {
+          currentVerifySitup = currentVerifySitup + 1;
+        } else {
+          currentVerifySitup = 0;
+          newStatusSitup = "sit-down";
+        }
+      }
+    }
+
+  } else if (model_type == "squats") {
+
+      let filteredPredictions = predictions.filter(prediction => prediction.class.toLowerCase().includes("squat"));
+
+      for (var i = 0; i < filteredPredictions.length && i < 1; i++) {
+        var confidence = filteredPredictions[i].confidence;
+    
+        if (confidence < user_confidence) {
+          continue;
+        }
+    
+        if (filteredPredictions[i].class in bounding_box_colors) {
+          ctx.strokeStyle = bounding_box_colors[filteredPredictions[i].class];
+        } else {
+          var color =
+            color_choices[Math.floor(Math.random() * color_choices.length)];
+          ctx.strokeStyle = color;
+          // remove color from choices
+          color_choices.splice(color_choices.indexOf(color), 1);
+          
+          bounding_box_colors[filteredPredictions[i].class] = color;
+        }
+    
+        var prediction = filteredPredictions[i];
+        var x = prediction.bbox.x - prediction.bbox.width / 2;
+        var y = prediction.bbox.y - prediction.bbox.height / 2;
+        var width = prediction.bbox.width;
+        var height = prediction.bbox.height;
+    
+        if (shouldMirrorVideo) {
+          x = video.videoWidth - (x + width);
+        }
+    
+        ctx.rect(x, y, width, height);
+        ctx.fillStyle = "rgba(0, 0, 0, 0)";
+        ctx.fill();
+        ctx.fillStyle = ctx.strokeStyle;
+        ctx.lineWidth = "4";
+        
+        // If video should be mirrored, flip the context only for drawing bbox, leave text
+        if (shouldMirrorVideo) {
+          ctx.save();
+          ctx.scale(-1, 1);
+          ctx.strokeRect(-x-width, y, width, height);
+          ctx.restore();
+        } else {
+          ctx.strokeRect(x, y, width, height);
+        }
+        
+        // Text stays the same regardless of mirroring
+        ctx.font = "25px Arial";
+        ctx.fillText(prediction.class + " " + Math.round(confidence * 100) + "%", x, y - 10);
+  
+        
+      if (filteredPredictions[i].class == "squat-up") {
+        if (currentVerifySquat >= verifyTimesSquat && currentStatusSquat == "squat-down") {
+          countSquat = countSquat + 1;
+          document.getElementById("squatCount").innerHTML = countSquat;
+          currentStatusSquat = "squat-up";
+        } else if(newStatusSquat == "squat-up") {
+          currentVerifySquat = currentVerifySquat + 1;
+        } else {
+          currentVerifySquat = 0;
+          newStatusSquat = "squat-up";
+        }
+      } else if (filteredPredictions[i].class == "squat-down") {
+        if (currentVerifySquat >= verifyTimesSquat && currentStatusSquat == "squat-up") {
+          currentStatusSquat = "squat-down";
+        } else if(newStatusSquat == "squat-down") {
+          currentVerifySquat = currentVerifySquat + 1;
+        } else {
+          currentVerifySquat = 0;
+          newStatusSquat = "squat-down";
+        }
+      }
+    }
+
   }
+
 }
 
 function handleFileSelect(evt) {
@@ -274,4 +455,32 @@ function changeMirror () {
 function changeConfidence() {
   user_confidence = document.getElementById("confidence").value / 100;
   document.getElementById("confidenceValue").innerHTML = document.getElementById("confidence").value;
+}
+
+function changeModel(modelName) {
+
+  if (modelName == "pushup") {
+    model_type = "pushups";
+    document.getElementById("pushupCountContainer").style.display = "block";
+    document.getElementById("situpCountContainer").style.display = "none";
+    document.getElementById("squatCountContainer").style.display = "none";
+    model_name = "push-up-ditection";
+    model_version = 3;
+  } else if (modelName == "situp") {
+    model_type = "situps";
+    document.getElementById("pushupCountContainer").style.display = "none";
+    document.getElementById("situpCountContainer").style.display = "block";
+    document.getElementById("squatCountContainer").style.display = "none";
+    model_name = "p-s-s";
+    model_version = 1;
+  } else if (modelName == "squat") {
+    model_type = "squats";
+    document.getElementById("pushupCountContainer").style.display = "none";
+    document.getElementById("situpCountContainer").style.display = "none";
+    document.getElementById("squatCountContainer").style.display = "block";
+    model_name = "p-s-s";
+    model_version = 1;
+    
+  }
+
 }

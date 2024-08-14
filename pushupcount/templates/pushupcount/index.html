@@ -31,6 +31,8 @@
       </script>
   {% endif %}
 
+  <link href="https://cdn.jsdelivr.net/css-toggle-switch/latest/toggle-switch.css" rel="stylesheet" />
+
   <!-- Load roboflow.js, the script that will handle loading and running our computer vision model in the browser -->
   <script src="https://cdn.jsdelivr.net/npm/inferencejs"></script>
   
@@ -57,12 +59,27 @@
     </div>
 
     <div class="marginTop">
-      <h3>Pushup Count: <span id="pushupCount">0</span></h3>
+      <h3 id="pushupCountContainer">Pushup Count: <span id="pushupCount">0</span></h3>
+      <h3 id="squatCountContainer">Squat Count: <span id="squatCount">0</span></h3>
+      <h3 id="situpCountContainer">Situp Count: <span id="situpCount">0</span></h3>
     </div>
 
-
     <div class="marginTop" id="videoSource">
-      <div>
+      <div> 
+        <div class="switch-toggle switch-3 switch-candy">
+          <input id="pushup" name="state-d" type="radio" checked="checked" />
+          <label for="pushup" onclick="changeModel('pushup')">Pushup</label>
+  
+          <input id="squat" name="state-d" type="radio" />
+          <label for="squat" onclick="changeModel('squat')">Squat</label>
+  
+          <input id="situp" name="state-d" type="radio" />
+          <label for="situp" onclick="changeModel('situp')">Situp</label>
+  
+          <a></a>
+        </div>
+      </div>
+      <div class="marginTop">
           <input type="file" id="uploadedFile" accept=".mp4, .mov" onchange="handleFileSelect(event)">
       </div>
       <div class="marginTop">
