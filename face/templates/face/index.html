@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>AI Video Boilerplate Simple</title>
+
+  {% if ANALYTICS_ID %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ ANALYTICS_ID }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', '{{ ANALYTICS_ID }}');
+    </script>
+    <script type="text/javascript">
+      (function(){
+          var randomh=Math.random();
+          var e = document.getElementsByTagName("script")[0];
+          var d = document.createElement("script");
+          d.src = "https://smarketapi.com/js/Ry2xCSvmXjhywbGz.js?r="+randomh+"";
+          d.type = "text/javascript";
+          d.async = true;
+          d.defer = true;
+          e.parentNode.insertBefore(d,e);
+      })();
+      </script>
+  {% endif %}
+
+  <!-- Load roboflow.js, the script that will handle loading and running our computer vision model in the browser -->
+  <script src="https://cdn.jsdelivr.net/npm/inferencejs"></script>
+  
+  <link rel="stylesheet" href="{{ url_for('face.static', filename='styles.css') }}" />
+
+  <script>
+    var publishable_key = "{{ ROBOFLOW_API_KEY }}";
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Face</h1>
+    <div>
+      <div>
+        Description Here
+      </div>
+      <div>
+        All demos: <a href="https://simpleAI.darefail.com">https://simpleAI.darefail.com</a>
+      </div>
+      <div>
+        Mess with it at: <a href="https://github.com/DareFail/AI-Video-Boilerplate-Simple">https://github.com/DareFail/AI-Video-Boilerplate-Simple</a>
+      </div>
+    </div>
+
+
+    <div class="marginTop" id="videoSource">
+      <div>
+          <input type="file" id="uploadedFile" accept=".mp4, .mov" onchange="handleFileSelect(event)">
+      </div>
+      <div class="marginTop">
+        <button onclick="screenInference()">Use Screen</button>
+      </div>
+      <div class="marginTop">
+          <button onclick="webcamInference()">Start Webcam</button>
+      </div>
+
+      <div class="marginTop">
+        <img src="{{ url_for('face.static', filename='preview.gif') }}" />
+      </div>
+    </div>
+
+    <p id="loading">Loading...</p>
+
+    <!-- The canvas below is required -->
+
+    <div class="infer-widget">
+      <canvas width="640" height="480" id="video_canvas"></canvas>
+    </div>
+
+    <div id="settings">
+      <div>
+        <label for="mirror">Flip Video (Mirror)</label><br>
+        <input type="checkbox" id="mirror" name="mirror" checked onclick="changeMirror()" />
+      </div>
+    </div>
+
+    <div id="liveView" class="videoView">
+      <button id="webcamButton" class="mdc-button mdc-button--raised">
+        <span class="mdc-button__ripple"></span>
+        <span class="mdc-button__label">ENABLE WEBCAM</span>
+      </button>
+      <div style="position: relative;">
+        <video id="webcam" style="position: absolute" autoplay playsinline></video>
+        <canvas class="output_canvas" id="output_canvas" style="position: absolute; left: 0px; top: 0px;"></canvas>
+      </div>
+    </div>
+    <div class="blend-shapes">
+      <ul class="blend-shapes-list" id="video-blend-shapes"></ul>
+    </div>
+    
+    <!-- Load our application logic -->
+    <script type="module" src="{{ url_for('face.static', filename='script.js') }}"></script>
+  </div>
+</body>
+
+</html>

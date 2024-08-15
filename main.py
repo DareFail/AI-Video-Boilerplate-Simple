@@ -5,6 +5,9 @@ from privasee import privasee
 from surfinterneteyes import surfinterneteyes
 from microsoftobjectdetection import microsoftobjectdetection
 from universeobjectdetection import universeobjectdetection
+from body import body
+from hands import hands
+from face import face
 from pushupcount import pushupcount
 from template import template
 
@@ -13,6 +16,9 @@ app = Flask(__name__)
 app.register_blueprint(homepage, url_prefix='')
 app.register_blueprint(microsoftobjectdetection, url_prefix='/microsoftobjectdetection')
 app.register_blueprint(universeobjectdetection, url_prefix='/universeobjectdetection')
+app.register_blueprint(body, url_prefix='/body')
+app.register_blueprint(hands, url_prefix='/hands')
+app.register_blueprint(face, url_prefix='/face')
 app.register_blueprint(gaze, url_prefix='/gaze')
 app.register_blueprint(pushupcount, url_prefix='/pushupcount')
 app.register_blueprint(privasee, url_prefix='/privasee')
