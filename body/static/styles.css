@@ -61,9 +61,10 @@ main {
   background-color: #00ffce;
 }
 
-.infer-widget {
+#infer-widget {
   width: fit-content;
   margin: auto;
+  display: none;
 }
 
 .links {
@@ -110,89 +111,4 @@ main {
 img {
   width: 100%;
   max-width: 600px;
-}
-
-
-
-
-
-
-
-video {
-  clear: both;
-  display: block;
-  transform: rotateY(180deg);
-  -webkit-transform: rotateY(180deg);
-  -moz-transform: rotateY(180deg);
-}
-
-section {
-  opacity: 1;
-  transition: opacity 500ms ease-in-out;
-}
-
-header,
-footer {
-  clear: both;
-}
-
-.removed {
-  display: none;
-}
-
-.invisible {
-  opacity: 0.2;
-}
-
-.note {
-  font-style: italic;
-  font-size: 130%;
-}
-
-.videoView,
-.detectOnClick {
-  position: relative;
-  float: left;
-  width: 48%;
-  margin: 2% 1%;
-  cursor: pointer;
-}
-
-.videoView p,
-.detectOnClick p {
-  position: absolute;
-  padding: 5px;
-  background-color: #007f8b;
-  color: #fff;
-  border: 1px dashed rgba(255, 255, 255, 0.7);
-  z-index: 2;
-  font-size: 12px;
-  margin: 0;
-}
-
-.highlighter {
-  background: rgba(0, 255, 0, 0.25);
-  border: 1px dashed #fff;
-  z-index: 1;
-  position: absolute;
-}
-
-.canvas {
-  z-index: 1;
-  position: absolute;
-  pointer-events: none;
-}
-
-.output_canvas {
-  transform: rotateY(180deg);
-  -webkit-transform: rotateY(180deg);
-  -moz-transform: rotateY(180deg);
-}
-
-.detectOnClick {
-  z-index: 0;
-}
-
-.detectOnClick img {
-  width: 100%;
 }

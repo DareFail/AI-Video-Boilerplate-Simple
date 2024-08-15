@@ -13,6 +13,7 @@ var confidence_threshold = 0.1;
 var model_name = "push-up-ditection";
 var model_version = 3;
 var model_type = "pushups";
+var video;
 
 // Pushups
 var countPushup = 0;
@@ -89,6 +90,7 @@ function detectFrame() {
       var loading = document.getElementById("loading");
       loading.style.display = "none";
       document.getElementById("videoSource").style.display = "none";
+      document.getElementById("infer-widget").style.display = "block";
     }
     requestAnimationFrame(detectFrame);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -418,8 +420,8 @@ function handleInference(video) {
 
   // on full load, set the video height and width
   video.onplay = function() {
-    height = video.videoHeight;
-    width = video.videoWidth;
+    var height = video.videoHeight;
+    var width = video.videoWidth;
 
     // scale down video by 0.75
 

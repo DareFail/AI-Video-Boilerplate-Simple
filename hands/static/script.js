@@ -6,12 +6,20 @@
 // On the first prediction, an initialiation step happens in detectFrame()
 // to prepare the canvas on which predictions are displayed.
 
+import {
+  HandLandmarker,
+  FilesetResolver,
+  DrawingUtils
+} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0"
+
+
 var bounding_box_colors = {};
 
 var user_confidence = 0.6;
 var confidence_threshold = 0.1;
 var model_name = "microsoft-coco";
 var model_version = 9;
+var video;
 
 var shouldMirrorVideo = true;
 
@@ -38,12 +46,73 @@ var ctx = canvas.getContext("2d");
 const inferEngine = new inferencejs.InferenceEngine();
 var modelWorkerId = null;
 
+const drawingUtils = new DrawingUtils(ctx)
+
+let lastVideoTime = -1
+let results = undefined
+
+
+let handLandmarker = undefined
+let runningMode = "IMAGE"
+let HAND_CONNECTIONS = [
+  {'start': 0, 'end': 1},
+  {'start': 1, 'end': 2},
+  {'start': 2, 'end': 3},
+  {'start': 3, 'end': 4},
+  {'start': 0, 'end': 5},
+  {'start': 5, 'end': 6},
+  {'start': 6, 'end': 7},
+  {'start': 7, 'end': 8},
+  {'start': 5, 'end': 9},
+  {'start': 9, 'end': 10},
+  {'start': 10, 'end': 11},
+  {'start': 11, 'end': 12},
+  {'start': 9, 'end': 13},
+  {'start': 13, 'end': 14},
+  {'start': 14, 'end': 15},
+  {'start': 15, 'end': 16},
+  {'start': 13, 'end': 17},
+  {'start': 0, 'end': 17},
+  {'start': 17, 'end': 18},
+  {'start': 18, 'end': 19},
+  {'start': 19, 'end': 20}
+]
+
+
+ 
 
 function detectFrame() {
   // On first run, initialize a canvas
   // On all runs, run inference using a video frame
   // For each video frame, draw bounding boxes on the canvas
   if (!modelWorkerId) return requestAnimationFrame(detectFrame);
+
+
+  if (runningMode === "IMAGE") {
+    runningMode = "VIDEO"
+    handLandmarker.setOptions({ runningMode: "VIDEO" })
+  }
+  let startTimeMs = performance.now()
+  if (lastVideoTime !== video.currentTime) {
+    lastVideoTime = video.currentTime
+    results = handLandmarker.detectForVideo(video, startTimeMs)
+  }
+  if (results.landmarks) {
+    for (const landmarks of results.landmarks) {
+      var newLandmarks = landmarks;
+      if (shouldMirrorVideo) {
+          newLandmarks = landmarks.map(obj => ({
+            ...obj,
+            x: 1 - obj.x
+          }));
+      }
+      drawingUtils.drawConnectors(newLandmarks, HAND_CONNECTIONS, {
+        color: "#00FF00",
+        lineWidth: 5
+      })
+      drawingUtils.drawLandmarks(newLandmarks, { color: "#FF0000", lineWidth: 2 })
+    }
+  }
 
   inferEngine.infer(modelWorkerId, new inferencejs.CVImage(video)).then(function(predictions) {
 
@@ -62,6 +131,7 @@ function detectFrame() {
       var loading = document.getElementById("loading");
       loading.style.display = "none";
       document.getElementById("videoSource").style.display = "none";
+      document.getElementById("infer-widget").style.display = "block";
     }
     requestAnimationFrame(detectFrame);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -209,8 +279,8 @@ function handleInference(video) {
 
   // on full load, set the video height and width
   video.onplay = function() {
-    height = video.videoHeight;
-    width = video.videoWidth;
+    var height = video.videoHeight;
+    var width = video.videoWidth;
 
     // scale down video by 0.75
 
@@ -250,41 +320,6 @@ function changeConfidence() {
 
 
 
-
-import {
-  HandLandmarker,
-  FilesetResolver,
-  DrawingUtils
-} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0"
-
-let handLandmarker = undefined
-let runningMode = "IMAGE"
-let enableWebcamButton
-let webcamRunning = false
-let HAND_CONNECTIONS = [
-  {'start': 0, 'end': 1},
-  {'start': 1, 'end': 2},
-  {'start': 2, 'end': 3},
-  {'start': 3, 'end': 4},
-  {'start': 0, 'end': 5},
-  {'start': 5, 'end': 6},
-  {'start': 6, 'end': 7},
-  {'start': 7, 'end': 8},
-  {'start': 5, 'end': 9},
-  {'start': 9, 'end': 10},
-  {'start': 10, 'end': 11},
-  {'start': 11, 'end': 12},
-  {'start': 9, 'end': 13},
-  {'start': 13, 'end': 14},
-  {'start': 14, 'end': 15},
-  {'start': 15, 'end': 16},
-  {'start': 13, 'end': 17},
-  {'start': 0, 'end': 17},
-  {'start': 17, 'end': 18},
-  {'start': 18, 'end': 19},
-  {'start': 19, 'end': 20}
-]
-
 // Before we can use HandLandmarker class we must wait for it to finish
 // loading. Machine Learning models can be large and take a moment to
 // get everything needed to run.
@@ -303,84 +338,8 @@ const createHandLandmarker = async () => {
 }
 createHandLandmarker()
 
-const video = document.getElementById("webcam")
-const canvasElement = document.getElementById("output_canvas")
-const canvasCtx = canvasElement.getContext("2d")
-const drawingUtils = new DrawingUtils(canvasCtx)
 
-// Check if webcam access is supported.
-const hasGetUserMedia = () => !!navigator.mediaDevices?.getUserMedia
 
-// If webcam supported, add event listener to button for when user
-// wants to activate it.
-if (hasGetUserMedia()) {
-  enableWebcamButton = document.getElementById("webcamButton")
-  enableWebcamButton.addEventListener("click", enableCam)
-} else {
-  console.warn("getUserMedia() is not supported by your browser")
-}
-
-// Enable the live webcam view and start detection.
-function enableCam(event) {
-  if (!handLandmarker) {
-    console.log("Wait! objectDetector not loaded yet.")
-    return
-  }
-
-  if (webcamRunning === true) {
-    webcamRunning = false
-    enableWebcamButton.innerText = "ENABLE PREDICTIONS"
-  } else {
-    webcamRunning = true
-    enableWebcamButton.innerText = "DISABLE PREDICTIONS"
-  }
-
-  // getUsermedia parameters.
-  const constraints = {
-    video: true
-  }
-
-  // Activate the webcam stream.
-  navigator.mediaDevices.getUserMedia(constraints).then(stream => {
-    video.srcObject = stream
-    video.addEventListener("loadeddata", predictWebcam)
-  })
-}
-
-let lastVideoTime = -1
-let results = undefined
-console.log(video)
-async function predictWebcam() {
-  canvasElement.style.width = video.videoWidth
-  canvasElement.style.height = video.videoHeight
-  canvasElement.width = video.videoWidth
-  canvasElement.height = video.videoHeight
-
-  // Now let's start detecting the stream.
-  if (runningMode === "IMAGE") {
-    runningMode = "VIDEO"
-    await handLandmarker.setOptions({ runningMode: "VIDEO" })
-  }
-  let startTimeMs = performance.now()
-  if (lastVideoTime !== video.currentTime) {
-    lastVideoTime = video.currentTime
-    results = handLandmarker.detectForVideo(video, startTimeMs)
-  }
-  canvasCtx.save()
-  canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height)
-  if (results.landmarks) {
-    for (const landmarks of results.landmarks) {
-      drawingUtils.drawConnectors(landmarks, HAND_CONNECTIONS, {
-        color: "#00FF00",
-        lineWidth: 5
-      })
-      drawingUtils.drawLandmarks(landmarks, { color: "#FF0000", lineWidth: 2 })
-    }
-  }
-  canvasCtx.restore()
-
-  // Call this function again to keep predicting when the browser is ready.
-  if (webcamRunning === true) {
-    window.requestAnimationFrame(predictWebcam)
-  }
-}
+document.getElementById("webcamButton").addEventListener('click', webcamInference);
+document.getElementById("mirror").addEventListener('click', changeMirror);
+document.getElementById("screenButton").addEventListener('click', screenInference);

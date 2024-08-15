@@ -61,9 +61,10 @@ main {
   background-color: #00ffce;
 }
 
-.infer-widget {
+#infer-widget {
   width: fit-content;
   margin: auto;
+  display: none;
 }
 
 .links {

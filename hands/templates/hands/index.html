@@ -62,44 +62,31 @@
           <input type="file" id="uploadedFile" accept=".mp4, .mov" onchange="handleFileSelect(event)">
       </div>
       <div class="marginTop">
-        <button onclick="screenInference()">Use Screen</button>
+        <button id="screenButton">Use Screen</button>
       </div>
       <div class="marginTop">
-          <button onclick="webcamInference()">Start Webcam</button>
+          <button id="webcamButton">Start Webcam</button>
       </div>
 
       <div class="marginTop">
         <img src="{{ url_for('hands.static', filename='preview.gif') }}" />
       </div>
     </div>
+    
 
     <p id="loading">Loading...</p>
 
     <!-- The canvas below is required -->
 
-    <div class="infer-widget">
+    <div id="infer-widget">
       <canvas width="640" height="480" id="video_canvas"></canvas>
     </div>
 
     <div id="settings">
       <div>
         <label for="mirror">Flip Video (Mirror)</label><br>
-        <input type="checkbox" id="mirror" name="mirror" checked onclick="changeMirror()" />
+        <input type="checkbox" id="mirror" name="mirror" checked />
       </div>
-    </div>
-
-    <div id="liveView" class="videoView">
-      <button id="webcamButton" class="mdc-button mdc-button--raised">
-        <span class="mdc-button__ripple"></span>
-        <span class="mdc-button__label">ENABLE WEBCAM</span>
-      </button>
-      <div style="position: relative;">
-        <video id="webcam" style="position: absolute" autoplay playsinline></video>
-        <canvas class="output_canvas" id="output_canvas" style="position: absolute; left: 0px; top: 0px;"></canvas>
-      </div>
-    </div>
-    <div class="blend-shapes">
-      <ul class="blend-shapes-list" id="video-blend-shapes"></ul>
     </div>
     
     <!-- Load our application logic -->

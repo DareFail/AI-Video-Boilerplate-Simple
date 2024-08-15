@@ -5,6 +5,11 @@
 // After this happens, the model initializes and starts to make predictions
 // On the first prediction, an initialiation step happens in detectFrame()
 // to prepare the canvas on which predictions are displayed.
+import {
+  PoseLandmarker,
+  FilesetResolver,
+  DrawingUtils
+} from "https://cdn.skypack.dev/@mediapipe/tasks-vision@0.10.0"
 
 var bounding_box_colors = {};
 
@@ -12,6 +17,7 @@ var user_confidence = 0.6;
 var confidence_threshold = 0.1;
 var model_name = "microsoft-coco";
 var model_version = 9;
+var video;
 
 var shouldMirrorVideo = true;
 
@@ -39,11 +45,44 @@ const inferEngine = new inferencejs.InferenceEngine();
 var modelWorkerId = null;
 
 
+let poseLandmarker = undefined
+let runningMode = "IMAGE"
+const drawingUtils = new DrawingUtils(ctx)
+let lastVideoTime = -1
+
 function detectFrame() {
   // On first run, initialize a canvas
   // On all runs, run inference using a video frame
   // For each video frame, draw bounding boxes on the canvas
   if (!modelWorkerId) return requestAnimationFrame(detectFrame);
+
+
+
+  if (runningMode === "IMAGE") {
+    runningMode = "VIDEO"
+    poseLandmarker.setOptions({ runningMode: "VIDEO" })
+  }
+  let startTimeMs = performance.now()
+  if (lastVideoTime !== video.currentTime) {
+    lastVideoTime = video.currentTime
+    poseLandmarker.detectForVideo(video, startTimeMs, result => {
+      for (const landmark of result.landmarks) {
+        var newLandmark = landmark;
+        if (shouldMirrorVideo) {
+            newLandmark = landmark.map(obj => ({
+              ...obj,
+              x: 1 - obj.x
+            }));
+        }
+
+        drawingUtils.drawLandmarks(newLandmark, {
+          radius: data => DrawingUtils.lerp(data.from.z, -0.15, 0.1, 5, 1)
+        })
+        drawingUtils.drawConnectors(newLandmark, PoseLandmarker.POSE_CONNECTIONS)
+      }
+    })
+  }
+
 
   inferEngine.infer(modelWorkerId, new inferencejs.CVImage(video)).then(function(predictions) {
 
@@ -62,6 +101,7 @@ function detectFrame() {
       var loading = document.getElementById("loading");
       loading.style.display = "none";
       document.getElementById("videoSource").style.display = "none";
+      document.getElementById("infer-widget").style.display = "block";
     }
     requestAnimationFrame(detectFrame);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -209,8 +249,8 @@ function handleInference(video) {
 
   // on full load, set the video height and width
   video.onplay = function() {
-    height = video.videoHeight;
-    width = video.videoWidth;
+    var height = video.videoHeight;
+    var width = video.videoWidth;
 
     // scale down video by 0.75
 
@@ -250,22 +290,6 @@ function changeConfidence() {
 
 
 
-
-
-
-import {
-  PoseLandmarker,
-  FilesetResolver,
-  DrawingUtils
-} from "https://cdn.skypack.dev/@mediapipe/tasks-vision@0.10.0"
-
-let poseLandmarker = undefined
-let runningMode = "IMAGE"
-let enableWebcamButton
-let webcamRunning = false
-const videoHeight = "360px"
-const videoWidth = "480px"
-
 // Before we can use PoseLandmarker class we must wait for it to finish
 // loading. Machine Learning models can be large and take a moment to
 // get everything needed to run.
@@ -284,79 +308,7 @@ const createPoseLandmarker = async () => {
 }
 createPoseLandmarker()
 
-const video = document.getElementById("webcam")
-const canvasElement = document.getElementById("output_canvas")
-const canvasCtx = canvasElement.getContext("2d")
-const drawingUtils = new DrawingUtils(canvasCtx)
 
-// Check if webcam access is supported.
-const hasGetUserMedia = () => !!navigator.mediaDevices?.getUserMedia
-
-// If webcam supported, add event listener to button for when user
-// wants to activate it.
-if (hasGetUserMedia()) {
-  enableWebcamButton = document.getElementById("webcamButton")
-  enableWebcamButton.addEventListener("click", enableCam)
-} else {
-  console.warn("getUserMedia() is not supported by your browser")
-}
-
-// Enable the live webcam view and start detection.
-function enableCam(event) {
-  if (!poseLandmarker) {
-    console.log("Wait! poseLandmaker not loaded yet.")
-    return
-  }
-
-  if (webcamRunning === true) {
-    webcamRunning = false
-    enableWebcamButton.innerText = "ENABLE PREDICTIONS"
-  } else {
-    webcamRunning = true
-    enableWebcamButton.innerText = "DISABLE PREDICTIONS"
-  }
-
-  // getUsermedia parameters.
-  const constraints = {
-    video: true
-  }
-
-  // Activate the webcam stream.
-  navigator.mediaDevices.getUserMedia(constraints).then(stream => {
-    video.srcObject = stream
-    video.addEventListener("loadeddata", predictWebcam)
-  })
-}
-
-let lastVideoTime = -1
-async function predictWebcam() {
-  canvasElement.style.height = videoHeight
-  video.style.height = videoHeight
-  canvasElement.style.width = videoWidth
-  video.style.width = videoWidth
-  // Now let's start detecting the stream.
-  if (runningMode === "IMAGE") {
-    runningMode = "VIDEO"
-    await poseLandmarker.setOptions({ runningMode: "VIDEO" })
-  }
-  let startTimeMs = performance.now()
-  if (lastVideoTime !== video.currentTime) {
-    lastVideoTime = video.currentTime
-    poseLandmarker.detectForVideo(video, startTimeMs, result => {
-      canvasCtx.save()
-      canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height)
-      for (const landmark of result.landmarks) {
-        drawingUtils.drawLandmarks(landmark, {
-          radius: data => DrawingUtils.lerp(data.from.z, -0.15, 0.1, 5, 1)
-        })
-        drawingUtils.drawConnectors(landmark, PoseLandmarker.POSE_CONNECTIONS)
-      }
-      canvasCtx.restore()
-    })
-  }
-
-  // Call this function again to keep predicting when the browser is ready.
-  if (webcamRunning === true) {
-    window.requestAnimationFrame(predictWebcam)
-  }
-}
+document.getElementById("webcamButton").addEventListener('click', webcamInference);
+document.getElementById("mirror").addEventListener('click', changeMirror);
+document.getElementById("screenButton").addEventListener('click', screenInference);
