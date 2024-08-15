@@ -157,7 +157,7 @@ function webcamInference() {
 
   navigator.mediaDevices
     .getUserMedia({ 
-      video: { facingMode: "environment" },
+      video: { facingMode: "user" },
       audio: false
     })
     .then(function(stream) {
@@ -169,6 +169,74 @@ function webcamInference() {
       console.log(err);
     });
 }
+
+function drawInference() {
+  var loading = document.getElementById("loading");
+  loading.style.display = "block";
+  document.getElementById("drawingTools").style.display = "block";
+
+  var drawCanvas = document.createElement('canvas');
+  drawCanvas.id = "webcam";
+  document.getElementById("video_canvas").after(drawCanvas);
+
+  // scale down video by 0.75
+  drawCanvas.style.width = 640 + "px";
+  drawCanvas.style.height = 480 + "px";
+
+  canvas.style.width = 640 + "px";
+  canvas.style.height = 480 + "px";
+
+  document.getElementById("video_canvas").style.display = "block";
+
+  ctx.scale(1, 1);
+
+  img = new Image();
+  img.src = drawCanvas.toDataURL();
+
+  startup();
+
+  inferEngine.startWorker(model_name, model_version, publishable_key, [{ scoreThreshold: confidence_threshold }])
+    .then((id) => {
+      modelWorkerId = id;
+      // Start inference
+     detectStillImage();
+  });
+}
+
+function detectStillImage() {
+  // On first run, initialize a canvas
+  // On all runs, run inference using an image
+  // For each image, draw bounding boxes on the canvas
+
+  if (!modelWorkerId) return requestAnimationFrame(detectStillImage);
+
+  inferEngine.infer(modelWorkerId, new inferencejs.CVImage(img)).then(function(predictions) {
+
+    if (!canvas_painted) {
+      var image_start = document.getElementById("webcam");
+
+      canvas.top = image_start.top;
+      canvas.left = image_start.left;
+      canvas.style.top = image_start.top + "px";
+      canvas.style.left = image_start.left + "px";
+      canvas.style.position = "absolute";
+      image_start.style.display = "block";
+      canvas.style.display = "absolute";
+      canvas_painted = true;
+
+      var loading = document.getElementById("loading");
+      loading.style.display = "none";
+      document.getElementById("videoSource").style.display = "none";
+    }
+    requestAnimationFrame(detectStillImage);
+
+    if (img) {
+      drawBoundingBoxes(predictions, ctx)
+    }
+  });
+}
+
+
 
 function screenInference() {
   // Ask for webcam permissions, then run main application.
@@ -245,4 +313,125 @@ function changeMirror () {
 function changeConfidence() {
   user_confidence = document.getElementById("confidence").value / 100;
   document.getElementById("confidenceValue").innerHTML = document.getElementById("confidence").value;
+}
+
+
+// Canvas
+let isDrawing = false;
+let posX = 0;
+let posY = 0;
+var offsetX;
+var offsetY;
+const ongoingTouches = [];
+
+function startup() {
+  canvas.addEventListener('touchstart', handleStart);
+  canvas.addEventListener('touchend', handleEnd);
+  canvas.addEventListener('touchcancel', handleCancel);
+  canvas.addEventListener('touchmove', handleMove);
+  canvas.addEventListener('mousedown', (e) => {
+    posX = e.offsetX;
+    posY = e.offsetY;
+    isDrawing = true;
+  });
+
+  canvas.addEventListener('mousemove', (e) => {
+    if (isDrawing) {
+      drawLine(ctx, posX, posY, e.offsetX, e.offsetY);
+      posX = e.offsetX;
+      posY = e.offsetY;
+    }
+  });
+
+  canvas.addEventListener('mouseup', (e) => {
+    if (isDrawing) {
+      drawLine(ctx, posX, posY, e.offsetX, e.offsetY);
+      posX = 0;
+      posY = 0;
+      isDrawing = false;
+    }
+  });
+}
+
+function handleStart(evt) {
+  evt.preventDefault();
+  const touches = evt.changedTouches;
+  offsetX = canvas.getBoundingClientRect().left;
+  offsetY = canvas.getBoundingClientRect().top;
+  for (let i = 0; i < touches.length; i++) {
+    ongoingTouches.push(copyTouch(touches[i]));
+  }
+}
+
+function handleMove(evt) {
+  evt.preventDefault();
+  const touches = evt.changedTouches;
+  for (let i = 0; i < touches.length; i++) {
+    const color = document.getElementById('selColor').value;
+    const idx = ongoingTouchIndexById(touches[i].identifier);
+    if (idx >= 0) {
+      ctx.beginPath();
+      ctx.moveTo(ongoingTouches[idx].clientX - offsetX, ongoingTouches[idx].clientY - offsetY);
+      ctx.lineTo(touches[i].clientX - offsetX, touches[i].clientY - offsetY);
+      ctx.lineWidth = document.getElementById('selWidth').value;
+      ctx.strokeStyle = color;
+      ctx.lineJoin = "round";
+      ctx.closePath();
+      ctx.stroke();
+      ongoingTouches.splice(idx, 1, copyTouch(touches[i]));  // swap in the new touch record
+    }
+  }
+}
+
+function handleEnd(evt) {
+  evt.preventDefault();
+  const touches = evt.changedTouches;
+  for (let i = 0; i < touches.length; i++) {
+    const color = document.getElementById('selColor').value;
+    let idx = ongoingTouchIndexById(touches[i].identifier);
+    if (idx >= 0) {
+      ctx.lineWidth = document.getElementById('selWidth').value;
+      ctx.fillStyle = color;
+      ongoingTouches.splice(idx, 1);  // remove it; we're done
+    }
+  }
+}
+
+function handleCancel(evt) {
+  evt.preventDefault();
+  const touches = evt.changedTouches;
+  for (let i = 0; i < touches.length; i++) {
+    let idx = ongoingTouchIndexById(touches[i].identifier);
+    ongoingTouches.splice(idx, 1);  // remove it; we're done
+  }
+}
+
+function copyTouch({ identifier, clientX, clientY }) {
+  return { identifier, clientX, clientY };
+}
+
+function ongoingTouchIndexById(idToFind) {
+  for (let i = 0; i < ongoingTouches.length; i++) {
+    const id = ongoingTouches[i].identifier;
+    if (id === idToFind) {
+      return i;
+    }
+  }
+  return -1;    // not found
+}
+
+function drawLine(ctx, x1, y1, x2, y2) {
+  ctx.beginPath();
+  ctx.strokeStyle = document.getElementById('selColor').value;
+  ctx.lineWidth = document.getElementById('selWidth').value;
+  ctx.lineJoin = "round";
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.closePath();
+  ctx.stroke();
+}
+
+function clearArea() {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }

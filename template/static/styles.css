@@ -111,3 +111,7 @@ img {
   width: 100%;
   max-width: 600px;
 }
+
+#drawingTools {
+  display: none;
+}
