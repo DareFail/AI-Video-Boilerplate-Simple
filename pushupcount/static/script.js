@@ -5,6 +5,11 @@
 // After this happens, the model initializes and starts to make predictions
 // On the first prediction, an initialiation step happens in detectFrame()
 // to prepare the canvas on which predictions are displayed.
+import {
+  PoseLandmarker,
+  FilesetResolver,
+  DrawingUtils
+} from "https://cdn.skypack.dev/@mediapipe/tasks-vision@0.10.0"
 
 var bounding_box_colors = {};
 
@@ -66,12 +71,42 @@ var ctx = canvas.getContext("2d");
 const inferEngine = new inferencejs.InferenceEngine();
 var modelWorkerId = null;
 
+let poseLandmarker = undefined
+let runningMode = "IMAGE"
+const drawingUtils = new DrawingUtils(ctx)
+let lastVideoTime = -1
+
 
 function detectFrame() {
   // On first run, initialize a canvas
   // On all runs, run inference using a video frame
   // For each video frame, draw bounding boxes on the canvas
   if (!modelWorkerId) return requestAnimationFrame(detectFrame);
+
+  if (runningMode === "IMAGE") {
+    runningMode = "VIDEO"
+    poseLandmarker.setOptions({ runningMode: "VIDEO" })
+  }
+  let startTimeMs = performance.now()
+  if (lastVideoTime !== video.currentTime) {
+    lastVideoTime = video.currentTime
+    poseLandmarker.detectForVideo(video, startTimeMs, result => {
+      for (const landmark of result.landmarks) {
+        var newLandmark = landmark;
+        if (shouldMirrorVideo) {
+            newLandmark = landmark.map(obj => ({
+              ...obj,
+              x: 1 - obj.x
+            }));
+        }
+
+        drawingUtils.drawLandmarks(newLandmark, {
+          radius: data => DrawingUtils.lerp(data.from.z, -0.15, 0.1, 5, 1)
+        })
+        drawingUtils.drawConnectors(newLandmark, PoseLandmarker.POSE_CONNECTIONS)
+      }
+    })
+  }
 
   inferEngine.infer(modelWorkerId, new inferencejs.CVImage(video)).then(function(predictions) {
 
@@ -486,3 +521,39 @@ function changeModel(modelName) {
   }
 
 }
+
+// Before we can use PoseLandmarker class we must wait for it to finish
+// loading. Machine Learning models can be large and take a moment to
+// get everything needed to run.
+const createPoseLandmarker = async () => {
+  const vision = await FilesetResolver.forVisionTasks(
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"
+  )
+  poseLandmarker = await PoseLandmarker.createFromOptions(vision, {
+    baseOptions: {
+      modelAssetPath: `https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task`,
+      delegate: "GPU"
+    },
+    runningMode: runningMode,
+    numPoses: 2
+  })
+}
+createPoseLandmarker()
+
+
+document.getElementById("webcamButton").addEventListener('click', webcamInference);
+document.getElementById("mirror").addEventListener('click', changeMirror);
+document.getElementById('confidence').addEventListener('input', changeConfidence);
+document.getElementById("screenButton").addEventListener('click', screenInference);
+
+document.getElementById("uploadedFile").addEventListener('change', function(event){
+  handleFileSelect(event);
+});
+
+var labels = document.querySelectorAll('.switch-toggle.switch-3.switch-candy label');
+labels.forEach((label) => {
+  label.addEventListener('click', function () {
+    var model = this.getAttribute('for');
+    changeModel(model);
+  });
+});

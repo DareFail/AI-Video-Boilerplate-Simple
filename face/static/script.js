@@ -378,3 +378,6 @@ function drawBlendShapes(el, blendShapes) {
 document.getElementById("webcamButton").addEventListener('click', webcamInference);
 document.getElementById("mirror").addEventListener('click', changeMirror);
 document.getElementById("screenButton").addEventListener('click', screenInference);
+document.getElementById("uploadedFile").addEventListener('change', function(event){
+  handleFileSelect(event);
+});
