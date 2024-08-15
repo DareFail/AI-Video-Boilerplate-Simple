@@ -33,7 +33,7 @@ var color_choices = [
 ];
 
 var canvas_painted = false;
-var canvas = document.getElementById("video_canvas");
+var canvas = document.getElementById("result_canvas");
 var ctx = canvas.getContext("2d");
 
 const inferEngine = new inferencejs.InferenceEngine();
@@ -56,6 +56,7 @@ function detectFrame() {
       canvas.style.top = video_start.top + "px";
       canvas.style.left = video_start.left + "px";
       canvas.style.position = "absolute";
+      canvas.style.zIndex = 100;
       video_start.style.display = "block";
       canvas.style.display = "absolute";
       canvas_painted = true;
@@ -173,6 +174,8 @@ function webcamInference() {
 }
 
 
+
+
 function screenInference() {
   // Ask for webcam permissions, then run main application.
   var loading = document.getElementById("loading");
@@ -203,7 +206,7 @@ function handleInference(video) {
   video.style.display = "none";
   video.setAttribute("playsinline", "");
 
-  document.getElementById("video_canvas").after(video);
+  document.getElementById("result_canvas").after(video);
 
   video.onloadedmetadata = function() {
     video.play();
@@ -226,10 +229,12 @@ function handleInference(video) {
     canvas.width = width;
     canvas.height = height;
 
-    document.getElementById("video_canvas").style.display = "block";
+    document.getElementById("result_canvas").style.display = "block";
   };
 
   ctx.scale(1, 1);
+
+  clearArea();
 
   // Load the Roboflow model using the publishable_key set in index.html
   // and the model name and version set at the top of this file
@@ -248,4 +253,146 @@ function changeMirror () {
 function changeConfidence() {
   user_confidence = document.getElementById("confidence").value / 100;
   document.getElementById("confidenceValue").innerHTML = document.getElementById("confidence").value;
+}
+
+
+
+
+
+
+// Canvas
+var canvas_input = document.getElementById("input_canvas");
+var ctx_input = canvas_input.getContext("2d");
+let isDrawing = false;
+let posX = 0;
+let posY = 0;
+var offsetX;
+var offsetY;
+const ongoingTouches = [];
+
+function drawInference() {
+  var loading = document.getElementById("loading");
+  loading.style.display = "block";
+  startup();
+  document.getElementById("drawingTools").style.display = "block";
+  document.getElementById("mirror").checked = false;
+  shouldMirrorVideo = false;
+
+  var stream = canvas_input.captureStream(25);
+  video = document.createElement("video");
+  video.srcObject = stream;
+
+  handleInference(video);  
+}
+
+function startup() {
+  canvas_input.addEventListener('touchstart', handleStart);
+  canvas_input.addEventListener('touchend', handleEnd);
+  canvas_input.addEventListener('touchcancel', handleCancel);
+  canvas_input.addEventListener('touchmove', handleMove);
+  canvas_input.addEventListener('mousedown', (e) => {
+    posX = e.offsetX;
+    posY = e.offsetY;
+    isDrawing = true;
+  });
+
+  canvas_input.addEventListener('mousemove', (e) => {
+    if (isDrawing) {
+      drawLine(ctx_input, posX, posY, e.offsetX, e.offsetY);
+      posX = e.offsetX;
+      posY = e.offsetY;
+    }
+  });
+
+  canvas_input.addEventListener('mouseup', (e) => {
+    if (isDrawing) {
+      drawLine(ctx_input, posX, posY, e.offsetX, e.offsetY);
+      posX = 0;
+      posY = 0;
+      isDrawing = false;
+    }
+  });
+}
+
+function handleStart(evt) {
+  evt.preventDefault();
+  const touches = evt.changedTouches;
+  offsetX = canvas_input.getBoundingClientRect().left;
+  offsetY = canvas_input.getBoundingClientRect().top;
+  for (let i = 0; i < touches.length; i++) {
+    ongoingTouches.push(copyTouch(touches[i]));
+  }
+}
+
+function handleMove(evt) {
+  evt.preventDefault();
+  const touches = evt.changedTouches;
+  for (let i = 0; i < touches.length; i++) {
+    const color = document.getElementById('selColor').value;
+    const idx = ongoingTouchIndexById(touches[i].identifier);
+    if (idx >= 0) {
+      ctx_input.beginPath();
+      ctx_input.moveTo(ongoingTouches[idx].clientX - offsetX, ongoingTouches[idx].clientY - offsetY);
+      ctx_input.lineTo(touches[i].clientX - offsetX, touches[i].clientY - offsetY);
+      ctx_input.lineWidth = document.getElementById('selWidth').value;
+      ctx_input.strokeStyle = color;
+      ctx_input.lineJoin = "round";
+      ctx_input.closePath();
+      ctx_input.stroke();
+      ongoingTouches.splice(idx, 1, copyTouch(touches[i]));  // swap in the new touch record
+    }
+  }
+}
+
+function handleEnd(evt) {
+  evt.preventDefault();
+  const touches = evt.changedTouches;
+  for (let i = 0; i < touches.length; i++) {
+    const color = document.getElementById('selColor').value;
+    let idx = ongoingTouchIndexById(touches[i].identifier);
+    if (idx >= 0) {
+      ctx_input.lineWidth = document.getElementById('selWidth').value;
+      ctx_input.fillStyle = color;
+      ongoingTouches.splice(idx, 1);  // remove it; we're done
+    }
+  }
+}
+
+function handleCancel(evt) {
+  evt.preventDefault();
+  const touches = evt.changedTouches;
+  for (let i = 0; i < touches.length; i++) {
+    let idx = ongoingTouchIndexById(touches[i].identifier);
+    ongoingTouches.splice(idx, 1);  // remove it; we're done
+  }
+}
+
+function copyTouch({ identifier, clientX, clientY }) {
+  return { identifier, clientX, clientY };
+}
+
+function ongoingTouchIndexById(idToFind) {
+  for (let i = 0; i < ongoingTouches.length; i++) {
+    const id = ongoingTouches[i].identifier;
+    if (id === idToFind) {
+      return i;
+    }
+  }
+  return -1;    // not found
+}
+
+function drawLine(ctx_input, x1, y1, x2, y2) {
+  ctx_input.beginPath();
+  ctx_input.strokeStyle = document.getElementById('selColor').value;
+  ctx_input.lineWidth = document.getElementById('selWidth').value;
+  ctx_input.lineJoin = "round";
+  ctx_input.moveTo(x1, y1);
+  ctx_input.lineTo(x2, y2);
+  ctx_input.closePath();
+  ctx_input.stroke();
+}
+
+function clearArea() {
+  ctx_input.setTransform(1, 0, 0, 1, 0, 0);
+  ctx_input.clearRect(0, 0, canvas_input.width, canvas_input.height);
 }

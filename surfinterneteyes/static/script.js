@@ -40,7 +40,7 @@ var color_choices = [
 ];
 
 var canvas_painted = false;
-var canvas = document.getElementById("video_canvas");
+var canvas = document.getElementById("result_canvas");
 var ctx = canvas.getContext("2d");
 
 const inferEngine = new inferencejs.InferenceEngine();
@@ -222,7 +222,7 @@ function handleInference(video) {
   video.style.display = "none";
   video.setAttribute("playsinline", "");
 
-  document.getElementById("video_canvas").after(video);
+  document.getElementById("result_canvas").after(video);
 
   video.onloadedmetadata = function() {
     video.play();
@@ -245,7 +245,7 @@ function handleInference(video) {
     canvas.width = width;
     canvas.height = height;
 
-    document.getElementById("video_canvas").style.display = "block";
+    document.getElementById("result_canvas").style.display = "block";
   };
 
   ctx.scale(1, 1);
@@ -286,7 +286,7 @@ function changeDotSize() {
 
 function estimateCanvasCoordinates(eyeX, eyeY, pitch, yaw) {
 
-  var canvas = document.getElementById("video_canvas");
+  var canvas = document.getElementById("result_canvas");
   var canvasHeight = canvas.offsetHeight;
   var canvasWidth = canvas.offsetWidth;
 
