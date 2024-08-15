@@ -56,7 +56,7 @@ function detectFrame() {
   // For each video frame, draw bounding boxes on the canvas
   if (!modelWorkerId) return requestAnimationFrame(detectFrame);
 
-
+ 
 
   if (runningMode === "IMAGE") {
     runningMode = "VIDEO"

@@ -76,6 +76,112 @@ let runningMode = "IMAGE"
 const drawingUtils = new DrawingUtils(ctx)
 let lastVideoTime = -1
 
+const POSE_CONNECTIONS_NO_FACE = [
+  {
+      "start": 0,
+      "end": 1
+  },
+  {
+      "start": 0,
+      "end": 2
+  },
+  {
+      "start": 2,
+      "end": 4
+  },
+  {
+      "start": 4,
+      "end": 6
+  },
+  {
+      "start": 4,
+      "end": 8
+  },
+  {
+      "start": 4,
+      "end": 10
+  },
+  {
+      "start": 6,
+      "end": 8
+  },
+  {
+      "start": 1,
+      "end": 3
+  },
+  {
+      "start": 3,
+      "end": 5
+  },
+  {
+      "start": 5,
+      "end": 7
+  },
+  {
+      "start": 5,
+      "end": 9
+  },
+  {
+      "start": 5,
+      "end": 11
+  },
+  {
+      "start": 7,
+      "end": 9
+  },
+  {
+      "start": 0,
+      "end": 12
+  },
+  {
+      "start": 1,
+      "end": 13
+  },
+  {
+      "start": 12,
+      "end": 13
+  },
+  {
+      "start": 12,
+      "end": 14
+  },
+  {
+      "start": 13,
+      "end": 15
+  },
+  {
+      "start": 14,
+      "end": 16
+  },
+  {
+      "start": 15,
+      "end": 17
+  },
+  {
+      "start": 16,
+      "end": 18
+  },
+  {
+      "start": 17,
+      "end": 19
+  },
+  {
+      "start": 18,
+      "end": 20
+  },
+  {
+      "start": 19,
+      "end": 21
+  },
+  {
+      "start": 16,
+      "end": 20
+  },
+  {
+      "start": 17,
+      "end": 21
+  }
+]
 
 function detectFrame() {
   // On first run, initialize a canvas
@@ -92,9 +198,9 @@ function detectFrame() {
     lastVideoTime = video.currentTime
     poseLandmarker.detectForVideo(video, startTimeMs, result => {
       for (const landmark of result.landmarks) {
-        var newLandmark = landmark;
+        var newLandmark = landmark.slice(11);
         if (shouldMirrorVideo) {
-            newLandmark = landmark.map(obj => ({
+            newLandmark = landmark.slice(11).map(obj => ({
               ...obj,
               x: 1 - obj.x
             }));
@@ -103,7 +209,8 @@ function detectFrame() {
         drawingUtils.drawLandmarks(newLandmark, {
           radius: data => DrawingUtils.lerp(data.from.z, -0.15, 0.1, 5, 1)
         })
-        drawingUtils.drawConnectors(newLandmark, PoseLandmarker.POSE_CONNECTIONS)
+        
+        drawingUtils.drawConnectors(newLandmark, POSE_CONNECTIONS_NO_FACE)
       }
     })
   }
