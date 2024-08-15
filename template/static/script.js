@@ -157,7 +157,7 @@ function webcamInference() {
 
   navigator.mediaDevices
     .getUserMedia({ 
-      video: { facingMode: "environment" },
+      video: { facingMode: "user" },
       audio: false
     })
     .then(function(stream) {
@@ -169,6 +169,7 @@ function webcamInference() {
       console.log(err);
     });
 }
+
 
 function screenInference() {
   // Ask for webcam permissions, then run main application.
