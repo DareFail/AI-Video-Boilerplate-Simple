@@ -48,41 +48,6 @@ var detectedClass_y = [];
 var had_detectedClass = [];
 
 
-
-var gauge = new RadialGauge({
-  renderTo: 'gauge1',
-  width: 400,
-  height: 400,
-  units: 'Km/h',
-  title: false,
-  value: 0,
-  minValue: 0,
-  maxValue: 220,
-  majorTicks: [
-      '0','20','40','60','80','100','120','140','160','180','200','220'
-  ],
-  minorTicks: 2,
-  strokeTicks: false,
-  highlights: [
-      { from: 0, to: 50, color: 'rgba(0,255,0,.15)' },
-      { from: 50, to: 100, color: 'rgba(255,255,0,.15)' },
-      { from: 100, to: 150, color: 'rgba(255,30,0,.25)' },
-      { from: 150, to: 200, color: 'rgba(255,0,225,.25)' },
-      { from: 200, to: 220, color: 'rgba(0,0,255,.25)' }
-  ],
-  colorPlate: '#222',
-  colorMajorTicks: '#f5f5f5',
-  colorMinorTicks: '#ddd',
-  colorTitle: '#fff',
-  colorUnits: '#ccc',
-  colorNumbers: '#eee',
-  colorNeedle: 'rgba(240, 128, 128, 1)',
-  colorNeedleEnd: 'rgba(255, 160, 122, .9)',
-  valueBox: true,
-  animationRule: 'bounce',
-  animationDuration: 500
-}).draw();
-
 function detectFrame() {
   // On first run, initialize a canvas
   // On all runs, run inference using a video frame
@@ -148,7 +113,7 @@ function drawBoundingBoxes(predictions, ctx) {
       detectedClass_x.push("");
       detectedClass_y.push("");
       had_detectedClass.push(false);
-      //document.getElementById('speed').innerHTML += '<div class="anotherDiv"><h3><span id="name_' + (detectedClass_name.length - 1) + '"></span>' + predictions[i].class + ' MPH: <span id="speed_' + (detectedClass_name.length - 1) + '">0</span></h3></div>';
+      document.getElementById('speed').innerHTML += '<div class="anotherDiv"><h3><span id="name_' + (detectedClass_name.length - 1) + '"></span>' + predictions[i].class + ' MPH: <span id="speed_' + (detectedClass_name.length - 1) + '">0</span></h3></div>';
     }
 
     var confidence = predictions[i].confidence;
@@ -185,9 +150,7 @@ function drawBoundingBoxes(predictions, ctx) {
     
     // Text stays the same regardless of mirroring
     ctx.font = "25px Arial";
-    //ctx.fillText(prediction.class + " " + Math.round(confidence * 100) + "%", x, y - 10);
-    ctx.fillText("Fist " + Math.round(confidence * 100) + "%", x, y - 10);
-
+    ctx.fillText(prediction.class + " " + Math.round(confidence * 100) + "%", x, y - 10);
   }
 
   if (predictions.length > 0 && isFrame == 1) {
@@ -204,18 +167,14 @@ function drawBoundingBoxes(predictions, ctx) {
       had_detectedClass[index] = true;
 
       if (detectedClass_x[index] != "") {
-          //document.getElementById("speed_" + index).innerHTML = calculateDistance(x_value, y_value, detectedClass_x[index], detectedClass_y[index]).toFixed(2);
-          if (detectedClass_name[index] == "Rock") {
-            gauge.value = calculateDistance(x_value, y_value, detectedClass_x[index], detectedClass_y[index]).toFixed(2);
-          }
-  
+          document.getElementById("speed_" + index).innerHTML = calculateDistance(x_value, y_value, detectedClass_x[index], detectedClass_y[index]).toFixed(2);  
       }
           
       detectedClass_x[index] = x_value;
       detectedClass_y[index] = y_value;
 
       if (!had_detectedClass[index]) {
-          //document.getElementById("speed_" + index).innerHTML = "";
+          document.getElementById("speed_" + index).innerHTML = "";
       }
 
       had_detectedClass[index] = false;
@@ -374,6 +333,13 @@ function changeConfidence() {
   document.getElementById("confidenceValue").innerHTML = document.getElementById("confidence").value;
 }
 
+function changeModelName() {
+  model_name = document.getElementById("modelName").value;
+}
+
+function changeVersionNumber() {
+  model_version = parseInt(document.getElementById("versionNumber").value);
+}
 
 
 
@@ -525,6 +491,6 @@ function calculateDistance(x1, y1, x2, y2) {
 
   const square = Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2));
 
-   return square / 4;
+   return square / 100;
 }
 

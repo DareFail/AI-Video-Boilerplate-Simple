@@ -32,10 +32,8 @@
   {% endif %}
 
   <script src="https://cdn.jsdelivr.net/npm/inferencejs"></script>
-
-  <script src="{{ url_for('punchspeed.static', filename='guage.js') }}"></script>
   
-  <link rel="stylesheet" href="{{ url_for('punchspeed.static', filename='styles.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('speed.static', filename='styles.css') }}" />
 
   <script>
     var publishable_key = "{{ ROBOFLOW_API_KEY }}";
@@ -44,10 +42,10 @@
 
 <body>
   <div class="container">
-    <h1>Punch Speed</h1>
+    <h1>Measure Speed</h1>
     <div>
       <div>
-        Measure the power of punches
+        Current speed of any object detected
       </div>
       <div>
         All demos: <a href="https://simpleAI.darefail.com">https://simpleAI.darefail.com</a>
@@ -58,13 +56,25 @@
     </div>
 
     <div class="marginTop" id="speed">
-
-      
     </div>
-    <canvas id="gauge1"></canvas>
 
 
     <div class="marginTop" id="videoSource">
+      <h3>First:</h3>
+      <div>
+        <div>Enter the universe model and version number. </div>
+        <div><a href="https://universe.roboflow.com/search?q=object+detection+model&t=metadata">Go to Universe</a> and click on any object detection model.</div>
+        <div>Then click "Model" look at the URL. https://universe.roboflow.com/username/<b>MODEL_NAME_HERE</b>/model/<b>VERSION_NUMBER_HERE</b></div>
+      </div>
+      <div class="marginTop">
+        <div>
+          Universe Model Name: <input id="modelName" value="rock-paper-scissors-sxsw" oninput="changeModelName()">
+        </div>
+        <div class="marginTop">
+          Version Number: <input id="versionNumber" type="number" value="11" oninput="changeVersionNumber()">
+        </div>
+      </div>
+      <h3>Then:</h3>
       <div>
           <input type="file" id="uploadedFile" accept=".mp4, .mov" onchange="handleFileSelect(event)">
       </div>
@@ -79,7 +89,7 @@
       </div>
 
       <div class="marginTop">
-        <img src="{{ url_for('punchspeed.static', filename='preview.gif') }}" />
+        <img src="{{ url_for('speed.static', filename='preview.gif') }}" />
       </div>
     </div>
 
@@ -121,7 +131,7 @@
       </div>
     </div>
     
-    <script src="{{ url_for('punchspeed.static', filename='script.js') }}"></script>
+    <script src="{{ url_for('speed.static', filename='script.js') }}"></script>
   </div>
 </body>
 

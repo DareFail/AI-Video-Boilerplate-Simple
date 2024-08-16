@@ -13,6 +13,7 @@ from template import template
 from lightsaber import lightsaber
 from punchspeed import punchspeed
 from puzzle import puzzle
+from speed import speed
 
 app = Flask(__name__)
 
@@ -30,6 +31,7 @@ app.register_blueprint(template, url_prefix='/template')
 app.register_blueprint(lightsaber, url_prefix='/lightsaber')
 app.register_blueprint(punchspeed, url_prefix='/punchspeed')
 app.register_blueprint(puzzle, url_prefix='/puzzle')
+app.register_blueprint(speed, url_prefix='/speed')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8000)
