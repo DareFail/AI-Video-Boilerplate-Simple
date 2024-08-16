@@ -13,6 +13,7 @@ var confidence_threshold = 0.1;
 var model_name = "microsoft-coco";
 var model_version = 9;
 var video;
+var video_camera;
 
 var shouldMirrorVideo = true;
 
@@ -38,6 +39,7 @@ var ctx = canvas.getContext("2d");
 
 const inferEngine = new inferencejs.InferenceEngine();
 var modelWorkerId = null;
+var drawingSelected = false;
 
 
 function detectFrame() {
@@ -45,6 +47,18 @@ function detectFrame() {
   // On all runs, run inference using a video frame
   // For each video frame, draw bounding boxes on the canvas
   if (!modelWorkerId) return requestAnimationFrame(detectFrame);
+
+  if (!drawingSelected) {
+    if (shouldMirrorVideo) {
+      ctx_input.save();
+      ctx_input.scale(-1, 1);
+      ctx_input.translate(-canvas_input.width, 0);
+      ctx_input.drawImage(video_camera, 0, 0, canvas_input.width, canvas_input.height);
+      ctx_input.restore();
+    } else {
+      ctx_input.drawImage(video_camera, 0, 0, canvas_input.width, canvas_input.height);
+    }
+  }
 
   inferEngine.infer(modelWorkerId, new inferencejs.CVImage(video)).then(function(predictions) {
 
@@ -68,14 +82,6 @@ function detectFrame() {
     }
     requestAnimationFrame(detectFrame);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    if (shouldMirrorVideo) {
-      ctx.save();  // save the current state
-      ctx.scale(-1, 1); // flip x axis
-      ctx.translate(-video.width, 0); // translate the x axis
-      ctx.drawImage(video, 0, 0); 
-      ctx.restore();
-    }
 
     if (video) {
 
@@ -110,25 +116,13 @@ function drawBoundingBoxes(predictions, ctx) {
     var width = prediction.bbox.width;
     var height = prediction.bbox.height;
 
-    if (shouldMirrorVideo) {
-      x = video.videoWidth - (x + width);
-    }
-
     ctx.rect(x, y, width, height);
     ctx.fillStyle = "rgba(0, 0, 0, 0)";
     ctx.fill();
     ctx.fillStyle = ctx.strokeStyle;
     ctx.lineWidth = "4";
     
-    // If video should be mirrored, flip the context only for drawing bbox, leave text
-    if (shouldMirrorVideo) {
-      ctx.save();
-      ctx.scale(-1, 1);
-      ctx.strokeRect(-x-width, y, width, height);
-      ctx.restore();
-    } else {
-      ctx.strokeRect(x, y, width, height);
-    }
+    ctx.strokeRect(x, y, width, height);
     
     // Text stays the same regardless of mirroring
     ctx.font = "25px Arial";
@@ -143,11 +137,21 @@ function handleFileSelect(evt) {
   var files = evt.target.files; // FileList object
   var file = files[0]; // Get the first file only
 
-  video = document.createElement("video");
-  video.src = URL.createObjectURL(file);
+  video_camera = document.createElement("video");
+  video_camera.src = URL.createObjectURL(file);
+
+  video_camera.onloadedmetadata = function() {
+    video_camera.play();
+  }
 
   document.getElementById("mirror").checked = false;
   shouldMirrorVideo = false;
+
+
+
+  var stream = canvas_input.captureStream(25);
+  video = document.createElement("video");
+  video.srcObject = stream;
 
   handleInference(video);
 
@@ -164,8 +168,16 @@ function webcamInference() {
       audio: false
     })
     .then(function(stream) {
+      video_camera = document.createElement("video");
+      video_camera.srcObject = stream;
+
+      video_camera.onloadedmetadata = function() {
+        video_camera.play();
+      }
+
+      var canvasStream = canvas_input.captureStream(25);
       video = document.createElement("video");
-      video.srcObject = stream;
+      video.srcObject = canvasStream;
       handleInference(video);
     })
     .catch(function(err) {
@@ -186,11 +198,19 @@ function screenInference() {
       audio: false
     })
     .then(function(stream) {
-      video = document.createElement("video");
-      video.srcObject = stream;
+      video_camera = document.createElement("video");
+      video_camera.srcObject = stream;
+
+      video_camera.onloadedmetadata = function() {
+        video_camera.play();
+      }
       
       document.getElementById("mirror").checked = false;
       shouldMirrorVideo = false;
+
+      var stream = canvas_input.captureStream(25);
+      video = document.createElement("video");
+      video.srcObject = stream;
 
       handleInference(video);
     })
@@ -274,9 +294,12 @@ function drawInference() {
   var loading = document.getElementById("loading");
   loading.style.display = "block";
   startup();
+  drawingSelected = true;
   document.getElementById("drawingTools").style.display = "block";
   document.getElementById("mirror").checked = false;
+  document.getElementById("input_canvas").style.zIndex = 200;
   shouldMirrorVideo = false;
+  document.getElementById("mirrorContainer").style.display = "none";
 
   var stream = canvas_input.captureStream(25);
   video = document.createElement("video");

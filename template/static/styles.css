@@ -120,5 +120,5 @@ img {
 #input_canvas {
   display: block;
   position: absolute;
-  z-index: 200;
+  z-index: 50;
 }
