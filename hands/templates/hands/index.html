@@ -65,6 +65,9 @@
         <button id="screenButton">Use Screen</button>
       </div>
       <div class="marginTop">
+        <button id="drawButton">Draw</button>
+      </div>
+      <div class="marginTop">
           <button id="webcamButton">Start Webcam</button>
       </div>
 
@@ -79,11 +82,31 @@
     <!-- The canvas below is required -->
 
     <div id="infer-widget">
+      <canvas width="640" height="480" id="input_canvas"></canvas>
       <canvas width="640" height="480" id="result_canvas"></canvas>
     </div>
 
+    <div id="drawingTools">
+      <button id="clearArea">Clear Area</button>
+      Line width : 
+      <select id="selWidth">
+        <option value="11">11</option>
+        <option value="13" selected="selected">13</option>
+        <option value="15">15</option>
+      </select>
+      Color : 
+      <select id="selColor">
+          <option value="black" selected="selected">black</option>
+          <option value="blue">blue</option>
+          <option value="red">red</option>
+          <option value="green">green</option>
+          <option value="yellow">yellow</option>
+          <option value="gray">gray</option>
+      </select>
+    </div>
+
     <div id="settings">
-      <div>
+      <div id="mirrorContainer">
         <label for="mirror">Flip Video (Mirror)</label><br>
         <input type="checkbox" id="mirror" name="mirror" checked />
       </div>

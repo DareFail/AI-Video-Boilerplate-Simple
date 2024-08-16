@@ -133,3 +133,13 @@ img {
   align-items: center;
   background-color: #007f8b;
 }
+
+#drawingTools {
+  display: none;
+}
+
+#input_canvas {
+  display: block;
+  position: absolute;
+  z-index: 50;
+}

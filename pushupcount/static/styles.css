@@ -126,3 +126,13 @@ img {
 #situpCountContainer {
   display: none;
 }
+
+#drawingTools {
+  display: none;
+}
+
+#input_canvas {
+  display: block;
+  position: absolute;
+  z-index: 50;
+}

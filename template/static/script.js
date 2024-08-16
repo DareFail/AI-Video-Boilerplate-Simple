@@ -46,7 +46,9 @@ function detectFrame() {
   // On first run, initialize a canvas
   // On all runs, run inference using a video frame
   // For each video frame, draw bounding boxes on the canvas
-  if (!modelWorkerId) return requestAnimationFrame(detectFrame);
+  if (!modelWorkerId) {
+    return requestAnimationFrame(detectFrame);
+  }
 
   if (!drawingSelected) {
     if (shouldMirrorVideo) {

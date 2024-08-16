@@ -18,6 +18,7 @@ var confidence_threshold = 0.1;
 var model_name = "microsoft-coco";
 var model_version = 9;
 var video;
+var video_camera;
 
 var shouldMirrorVideo = true;
 
@@ -43,6 +44,7 @@ var ctx = canvas.getContext("2d");
 
 const inferEngine = new inferencejs.InferenceEngine();
 var modelWorkerId = null;
+var drawingSelected = false;
 
 const imageBlendShapes = document.getElementById("image-blend-shapes")
 const videoBlendShapes = document.getElementById("video-blend-shapes")
@@ -57,7 +59,21 @@ function detectFrame() {
   // On first run, initialize a canvas
   // On all runs, run inference using a video frame
   // For each video frame, draw bounding boxes on the canvas
-  if (!modelWorkerId) return requestAnimationFrame(detectFrame);
+  if (!modelWorkerId) {
+    return requestAnimationFrame(detectFrame);
+  }
+
+  if (!drawingSelected) {
+    if (shouldMirrorVideo) {
+      ctx_input.save();
+      ctx_input.scale(-1, 1);
+      ctx_input.translate(-canvas_input.width, 0);
+      ctx_input.drawImage(video_camera, 0, 0, canvas_input.width, canvas_input.height);
+      ctx_input.restore();
+    } else {
+      ctx_input.drawImage(video_camera, 0, 0, canvas_input.width, canvas_input.height);
+    }
+  }
 
   if (runningMode === "IMAGE") {
     runningMode = "VIDEO"
@@ -71,12 +87,6 @@ function detectFrame() {
   if (results.faceLandmarks) {
     for (const landmarks of results.faceLandmarks) {
       var newLandmarks = landmarks;
-      if (shouldMirrorVideo) {
-          newLandmarks = landmarks.map(obj => ({
-            ...obj,
-            x: 1 - obj.x
-          }));
-      }
       drawingUtils.drawConnectors(
         newLandmarks,
         FaceLandmarker.FACE_LANDMARKS_TESSELATION,
@@ -136,6 +146,7 @@ function detectFrame() {
       canvas.style.top = video_start.top + "px";
       canvas.style.left = video_start.left + "px";
       canvas.style.position = "absolute";
+      canvas.style.zIndex = 100;
       video_start.style.display = "block";
       canvas.style.display = "absolute";
       canvas_painted = true;
@@ -147,14 +158,6 @@ function detectFrame() {
     }
     requestAnimationFrame(detectFrame);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    if (shouldMirrorVideo) {
-      ctx.save();  // save the current state
-      ctx.scale(-1, 1); // flip x axis
-      ctx.translate(-video.width, 0); // translate the x axis
-      ctx.drawImage(video, 0, 0); 
-      ctx.restore();
-    }
 
     if (video) {
 
@@ -189,25 +192,13 @@ function drawBoundingBoxes(predictions, ctx) {
     var width = prediction.bbox.width;
     var height = prediction.bbox.height;
 
-    if (shouldMirrorVideo) {
-      x = video.videoWidth - (x + width);
-    }
-
     ctx.rect(x, y, width, height);
     ctx.fillStyle = "rgba(0, 0, 0, 0)";
     ctx.fill();
     ctx.fillStyle = ctx.strokeStyle;
     ctx.lineWidth = "4";
     
-    // If video should be mirrored, flip the context only for drawing bbox, leave text
-    if (shouldMirrorVideo) {
-      ctx.save();
-      ctx.scale(-1, 1);
-      ctx.strokeRect(-x-width, y, width, height);
-      ctx.restore();
-    } else {
-      ctx.strokeRect(x, y, width, height);
-    }
+    ctx.strokeRect(x, y, width, height);
     
     // Text stays the same regardless of mirroring
     ctx.font = "25px Arial";
@@ -222,11 +213,21 @@ function handleFileSelect(evt) {
   var files = evt.target.files; // FileList object
   var file = files[0]; // Get the first file only
 
-  video = document.createElement("video");
-  video.src = URL.createObjectURL(file);
+  video_camera = document.createElement("video");
+  video_camera.src = URL.createObjectURL(file);
+
+  video_camera.onloadedmetadata = function() {
+    video_camera.play();
+  }
 
   document.getElementById("mirror").checked = false;
   shouldMirrorVideo = false;
+
+
+
+  var stream = canvas_input.captureStream(25);
+  video = document.createElement("video");
+  video.srcObject = stream;
 
   handleInference(video);
 
@@ -243,8 +244,16 @@ function webcamInference() {
       audio: false
     })
     .then(function(stream) {
+      video_camera = document.createElement("video");
+      video_camera.srcObject = stream;
+
+      video_camera.onloadedmetadata = function() {
+        video_camera.play();
+      }
+
+      var canvasStream = canvas_input.captureStream(25);
       video = document.createElement("video");
-      video.srcObject = stream;
+      video.srcObject = canvasStream;
       handleInference(video);
     })
     .catch(function(err) {
@@ -263,11 +272,19 @@ function screenInference() {
       audio: false
     })
     .then(function(stream) {
-      video = document.createElement("video");
-      video.srcObject = stream;
-      
+      video_camera = document.createElement("video");
+      video_camera.srcObject = stream;
+
+      video_camera.onloadedmetadata = function() {
+        video_camera.play();
+      }
+
       document.getElementById("mirror").checked = false;
       shouldMirrorVideo = false;
+
+      var stream = canvas_input.captureStream(25);
+      video = document.createElement("video");
+      video.srcObject = stream;
 
       handleInference(video);
     })
@@ -311,6 +328,8 @@ function handleInference(video) {
 
   ctx.scale(1, 1);
 
+  clearArea();
+
   // Load the Roboflow model using the publishable_key set in index.html
   // and the model name and version set at the top of this file
   inferEngine.startWorker(model_name, model_version, publishable_key, [{ scoreThreshold: confidence_threshold }])
@@ -330,6 +349,146 @@ function changeConfidence() {
   document.getElementById("confidenceValue").innerHTML = document.getElementById("confidence").value;
 }
 
+
+
+var canvas_input = document.getElementById("input_canvas");
+var ctx_input = canvas_input.getContext("2d");
+let isDrawing = false;
+let posX = 0;
+let posY = 0;
+var offsetX;
+var offsetY;
+const ongoingTouches = [];
+
+function drawInference() {
+  var loading = document.getElementById("loading");
+  loading.style.display = "block";
+  startup();
+  drawingSelected = true;
+  document.getElementById("drawingTools").style.display = "block";
+  document.getElementById("mirror").checked = false;
+  document.getElementById("input_canvas").style.zIndex = 200;
+  shouldMirrorVideo = false;
+  document.getElementById("mirrorContainer").style.display = "none";
+
+  var stream = canvas_input.captureStream(25);
+  video = document.createElement("video");
+  video.srcObject = stream;
+
+  handleInference(video);  
+}
+
+function startup() {
+  canvas_input.addEventListener('touchstart', handleStart);
+  canvas_input.addEventListener('touchend', handleEnd);
+  canvas_input.addEventListener('touchcancel', handleCancel);
+  canvas_input.addEventListener('touchmove', handleMove);
+  canvas_input.addEventListener('mousedown', (e) => {
+    posX = e.offsetX;
+    posY = e.offsetY;
+    isDrawing = true;
+  });
+
+  canvas_input.addEventListener('mousemove', (e) => {
+    if (isDrawing) {
+      drawLine(ctx_input, posX, posY, e.offsetX, e.offsetY);
+      posX = e.offsetX;
+      posY = e.offsetY;
+    }
+  });
+
+  canvas_input.addEventListener('mouseup', (e) => {
+    if (isDrawing) {
+      drawLine(ctx_input, posX, posY, e.offsetX, e.offsetY);
+      posX = 0;
+      posY = 0;
+      isDrawing = false;
+    }
+  });
+}
+
+function handleStart(evt) {
+  evt.preventDefault();
+  const touches = evt.changedTouches;
+  offsetX = canvas_input.getBoundingClientRect().left;
+  offsetY = canvas_input.getBoundingClientRect().top;
+  for (let i = 0; i < touches.length; i++) {
+    ongoingTouches.push(copyTouch(touches[i]));
+  }
+}
+
+function handleMove(evt) {
+  evt.preventDefault();
+  const touches = evt.changedTouches;
+  for (let i = 0; i < touches.length; i++) {
+    const color = document.getElementById('selColor').value;
+    const idx = ongoingTouchIndexById(touches[i].identifier);
+    if (idx >= 0) {
+      ctx_input.beginPath();
+      ctx_input.moveTo(ongoingTouches[idx].clientX - offsetX, ongoingTouches[idx].clientY - offsetY);
+      ctx_input.lineTo(touches[i].clientX - offsetX, touches[i].clientY - offsetY);
+      ctx_input.lineWidth = document.getElementById('selWidth').value;
+      ctx_input.strokeStyle = color;
+      ctx_input.lineJoin = "round";
+      ctx_input.closePath();
+      ctx_input.stroke();
+      ongoingTouches.splice(idx, 1, copyTouch(touches[i]));  // swap in the new touch record
+    }
+  }
+}
+
+function handleEnd(evt) {
+  evt.preventDefault();
+  const touches = evt.changedTouches;
+  for (let i = 0; i < touches.length; i++) {
+    const color = document.getElementById('selColor').value;
+    let idx = ongoingTouchIndexById(touches[i].identifier);
+    if (idx >= 0) {
+      ctx_input.lineWidth = document.getElementById('selWidth').value;
+      ctx_input.fillStyle = color;
+      ongoingTouches.splice(idx, 1);  // remove it; we're done
+    }
+  }
+}
+
+function handleCancel(evt) {
+  evt.preventDefault();
+  const touches = evt.changedTouches;
+  for (let i = 0; i < touches.length; i++) {
+    let idx = ongoingTouchIndexById(touches[i].identifier);
+    ongoingTouches.splice(idx, 1);  // remove it; we're done
+  }
+}
+
+function copyTouch({ identifier, clientX, clientY }) {
+  return { identifier, clientX, clientY };
+}
+
+function ongoingTouchIndexById(idToFind) {
+  for (let i = 0; i < ongoingTouches.length; i++) {
+    const id = ongoingTouches[i].identifier;
+    if (id === idToFind) {
+      return i;
+    }
+  }
+  return -1;    // not found
+}
+
+function drawLine(ctx_input, x1, y1, x2, y2) {
+  ctx_input.beginPath();
+  ctx_input.strokeStyle = document.getElementById('selColor').value;
+  ctx_input.lineWidth = document.getElementById('selWidth').value;
+  ctx_input.lineJoin = "round";
+  ctx_input.moveTo(x1, y1);
+  ctx_input.lineTo(x2, y2);
+  ctx_input.closePath();
+  ctx_input.stroke();
+}
+
+function clearArea() {
+  ctx_input.setTransform(1, 0, 0, 1, 0, 0);
+  ctx_input.clearRect(0, 0, canvas_input.width, canvas_input.height);
+}
 
 
 
@@ -377,7 +536,9 @@ function drawBlendShapes(el, blendShapes) {
 
 document.getElementById("webcamButton").addEventListener('click', webcamInference);
 document.getElementById("mirror").addEventListener('click', changeMirror);
+document.getElementById("clearArea").addEventListener('click', clearArea);
 document.getElementById("screenButton").addEventListener('click', screenInference);
+document.getElementById("drawButton").addEventListener('click', drawInference);
 document.getElementById("uploadedFile").addEventListener('change', function(event){
   handleFileSelect(event);
 });

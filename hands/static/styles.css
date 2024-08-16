@@ -112,3 +112,13 @@ img {
   width: 100%;
   max-width: 600px;
 }
+
+#drawingTools {
+  display: none;
+}
+
+#input_canvas {
+  display: block;
+  position: absolute;
+  z-index: 50;
+}
