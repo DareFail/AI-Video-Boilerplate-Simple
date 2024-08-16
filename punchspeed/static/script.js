@@ -154,10 +154,10 @@ function drawBoundingBoxes(predictions, ctx) {
 
   if (predictions.length > 0 && isFrame == 1) {
     for (var i = 0; i < predictions.length; i++) {
-      var x = prediction.bbox.x - prediction.bbox.width / 2;
-      var y = prediction.bbox.y - prediction.bbox.height / 2;
-      var width = prediction.bbox.width;
-      var height = prediction.bbox.height;
+      var x = predictions[i].bbox.x - predictions[i].bbox.width / 2;
+      var y = predictions[i].bbox.y - predictions[i].bbox.height / 2;
+      var width = predictions[i].bbox.width;
+      var height = predictions[i].bbox.height;
       
       const x_value = (x - width / 2);
       const y_value = (y - height / 2);
