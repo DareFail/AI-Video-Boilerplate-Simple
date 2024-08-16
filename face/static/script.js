@@ -349,6 +349,13 @@ function changeConfidence() {
   document.getElementById("confidenceValue").innerHTML = document.getElementById("confidence").value;
 }
 
+function changeModelName() {
+  model_name = document.getElementById("modelName").value;
+}
+
+function changeVersionNumber() {
+  model_version = parseInt(document.getElementById("versionNumber").value);
+}
 
 
 var canvas_input = document.getElementById("input_canvas");

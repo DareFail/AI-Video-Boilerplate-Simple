@@ -46,7 +46,7 @@
     <h1>Hands</h1>
     <div>
       <div>
-        Hands and finger live keypoints combined with object detection at the same time
+        Hands and finger live keypoints combined with any Trained Universe Model
       </div>
       <div>
         All demos: <a href="https://simpleAI.darefail.com">https://simpleAI.darefail.com</a>
@@ -57,7 +57,22 @@
     </div>
 
 
-    <div class="marginTop" id="videoSource">
+    <div id="videoSource">
+      <h3>First:</h3>
+      <div>
+        <div>Enter the universe model and version number. </div>
+        <div><a href="https://universe.roboflow.com/search?q=object+detection+model&t=metadata">Go to Universe</a> and click on any object detection model.</div>
+        <div>Then click "Model" look at the URL. https://universe.roboflow.com/username/<b>MODEL_NAME_HERE</b>/model/<b>VERSION_NUMBER_HERE</b></div>
+      </div>
+      <div class="marginTop">
+        <div>
+          Universe Model Name: <input id="modelName" value="microsoft-coco">
+        </div>
+        <div class="marginTop">
+          Version Number: <input id="versionNumber" type="number" value="9">
+        </div>
+      </div>
+      <h3>Then:</h3>
       <div>
           <input type="file" id="uploadedFile" accept=".mp4, .mov">
       </div>
