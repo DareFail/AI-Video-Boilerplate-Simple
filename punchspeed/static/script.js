@@ -5,6 +5,12 @@
 // After this happens, the model initializes and starts to make predictions
 // On the first prediction, an initialiation step happens in detectFrame()
 // to prepare the canvas on which predictions are displayed.
+import {
+  HandLandmarker,
+  FilesetResolver,
+  DrawingUtils
+} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0"
+
 
 var bounding_box_colors = {};
 
@@ -41,13 +47,41 @@ const inferEngine = new inferencejs.InferenceEngine();
 var modelWorkerId = null;
 var drawingSelected = false;
 
+const drawingUtils = new DrawingUtils(ctx)
+
+let lastVideoTime = -1
+let results = undefined
+
 var isFrame = 1;
-var detectedClass_name = [];
-var detectedClass_x = [];
-var detectedClass_y = [];
-var had_detectedClass = [];
+var fistFound = false;
+var fist_x = "";
+var fist_y = "";
 
-
+let handLandmarker = undefined
+let runningMode = "IMAGE"
+let HAND_CONNECTIONS = [
+  {'start': 0, 'end': 1},
+  {'start': 1, 'end': 2},
+  {'start': 2, 'end': 3},
+  {'start': 3, 'end': 4},
+  {'start': 0, 'end': 5},
+  {'start': 5, 'end': 6},
+  {'start': 6, 'end': 7},
+  {'start': 7, 'end': 8},
+  {'start': 5, 'end': 9},
+  {'start': 9, 'end': 10},
+  {'start': 10, 'end': 11},
+  {'start': 11, 'end': 12},
+  {'start': 9, 'end': 13},
+  {'start': 13, 'end': 14},
+  {'start': 14, 'end': 15},
+  {'start': 15, 'end': 16},
+  {'start': 13, 'end': 17},
+  {'start': 0, 'end': 17},
+  {'start': 17, 'end': 18},
+  {'start': 18, 'end': 19},
+  {'start': 19, 'end': 20}
+]
 
 var gauge = new RadialGauge({
   renderTo: 'gauge1',
@@ -128,28 +162,14 @@ function detectFrame() {
 
     if (video) {
 
-      var uniquePredictions = predictions.filter((prediction, index, self) =>
-        index === self.findIndex((p) => (
-          p.class === prediction.class
-        ))
-      );
-      uniquePredictions = uniquePredictions;
-
+      var uniquePredictions = predictions.filter(prediction => prediction.class === "Rock");
       drawBoundingBoxes(uniquePredictions, ctx)
     }
   });
 }
 
 function drawBoundingBoxes(predictions, ctx) {
-  for (var i = 0; i < predictions.length; i++) {
-
-    if (!detectedClass_name.includes(predictions[i].class)) {
-      detectedClass_name.push(predictions[i].class);
-      detectedClass_x.push("");
-      detectedClass_y.push("");
-      had_detectedClass.push(false);
-      //document.getElementById('speed').innerHTML += '<div class="anotherDiv"><h3><span id="name_' + (detectedClass_name.length - 1) + '"></span>' + predictions[i].class + ' MPH: <span id="speed_' + (detectedClass_name.length - 1) + '">0</span></h3></div>';
-    }
+  for (var i = 0; i < predictions.length && i < 1; i++) {
 
     var confidence = predictions[i].confidence;
 
@@ -188,45 +208,75 @@ function drawBoundingBoxes(predictions, ctx) {
     //ctx.fillText(prediction.class + " " + Math.round(confidence * 100) + "%", x, y - 10);
     ctx.fillText("Fist " + Math.round(confidence * 100) + "%", x, y - 10);
 
+    if (runningMode === "IMAGE") {
+      runningMode = "VIDEO"
+      handLandmarker.setOptions({ runningMode: "VIDEO" })
+    }
+    let startTimeMs = performance.now()
+    if (lastVideoTime !== video.currentTime) {
+      lastVideoTime = video.currentTime
+      results = handLandmarker.detectForVideo(video, startTimeMs)
+    }
+    if (results.landmarks) {
+
+      for (const landmarks of results.landmarks) {
+
+        const inside_x = landmarks[6].x * canvas.width;
+        const inside_y = landmarks[6].y * canvas.height;
+
+        if ((inside_x >= x && inside_x <= x + width) && (inside_y >= y && inside_y <= y + height)) {
+
+          fistFound = true;
+        } 
+      }
+    }
+
   }
 
-  if (predictions.length > 0 && isFrame == 1) {
-    for (var i = 0; i < predictions.length; i++) {
-      var x = predictions[i].bbox.x - predictions[i].bbox.width / 2;
-      var y = predictions[i].bbox.y - predictions[i].bbox.height / 2;
-      var width = predictions[i].bbox.width;
-      var height = predictions[i].bbox.height;
-      
-      const x_value = (x - width / 2);
-      const y_value = (y - height / 2);
+  if (runningMode === "IMAGE") {
+    runningMode = "VIDEO"
+    handLandmarker.setOptions({ runningMode: "VIDEO" })
+  }
+  let startTimeMs = performance.now()
+  if (lastVideoTime !== video.currentTime) {
+    lastVideoTime = video.currentTime
+    results = handLandmarker.detectForVideo(video, startTimeMs)
+  }
 
-      var index = detectedClass_name.indexOf(predictions[i].class)
-      had_detectedClass[index] = true;
+  if (fistFound && results.landmarks.length == 1) {
 
-      if (detectedClass_x[index] != "") {
-          //document.getElementById("speed_" + index).innerHTML = calculateDistance(x_value, y_value, detectedClass_x[index], detectedClass_y[index]).toFixed(2);
-          if (detectedClass_name[index] == "Rock") {
-            gauge.value = calculateDistance(x_value, y_value, detectedClass_x[index], detectedClass_y[index]).toFixed(2);
-          }
-  
+    var landmarks = results.landmarks[0];
+    
+    if(isFrame == 1) {
+
+      const current_x = landmarks[6].x * canvas.width;
+      const current_y = landmarks[6].y * canvas.height;
+
+      if (fist_x != "") {
+        gauge.value = calculateDistance(current_x, current_y, fist_x, fist_y).toFixed(2);
       }
           
-      detectedClass_x[index] = x_value;
-      detectedClass_y[index] = y_value;
-
-      if (!had_detectedClass[index]) {
-          //document.getElementById("speed_" + index).innerHTML = "";
-      }
-
-      had_detectedClass[index] = false;
+      fist_x = current_x;
+      fist_y = current_y;
     }
+  
+    drawingUtils.drawConnectors(landmarks, HAND_CONNECTIONS, {
+      color: "#00FF00",
+      lineWidth: 5
+    })
+    drawingUtils.drawLandmarks([landmarks[6]], { color: "#FF0000", lineWidth: 2 })
+
+  } else if (results.landmarks.length > 1) {
+    fistFound = false;
   }
 
   isFrame = isFrame + 1;
 
-  if (isFrame > 12) {
+  if (isFrame > 10) {
       isFrame = 1; 
   }
+
+
 }
 
 function handleFileSelect(evt) {
@@ -525,6 +575,37 @@ function calculateDistance(x1, y1, x2, y2) {
 
   const square = Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2));
 
-   return square / 4;
+   return square / 3.5;
 }
 
+
+
+
+// Before we can use HandLandmarker class we must wait for it to finish
+// loading. Machine Learning models can be large and take a moment to
+// get everything needed to run.
+const createHandLandmarker = async () => {
+  const vision = await FilesetResolver.forVisionTasks(
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"
+  )
+  handLandmarker = await HandLandmarker.createFromOptions(vision, {
+    baseOptions: {
+      modelAssetPath: `https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task`,
+      delegate: "GPU"
+    },
+    runningMode: runningMode,
+    numHands: 2
+  })
+}
+createHandLandmarker()
+
+
+
+document.getElementById("webcamButton").addEventListener('click', webcamInference);
+document.getElementById("mirror").addEventListener('click', changeMirror);
+document.getElementById("clearArea").addEventListener('click', clearArea);
+document.getElementById("screenButton").addEventListener('click', screenInference);
+document.getElementById("drawButton").addEventListener('click', drawInference);
+document.getElementById("uploadedFile").addEventListener('change', function(event){
+  handleFileSelect(event);
+});
