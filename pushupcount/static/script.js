@@ -31,11 +31,11 @@ var newStatusPushup = "push-ups";
 
 // Situps
 var countSitup = 0;
-var currentStatusSitup = "sit-up"
+var currentStatusSitup = "nothing"
 
 const verifyTimesSitup = 10;
 var currentVerifySitup = 0;
-var newStatusSitup = "sit-up";
+var newStatusSitup = "nothing";
 
 // Squats
 var countSquat = 0;
@@ -186,6 +186,40 @@ const POSE_CONNECTIONS_NO_FACE = [
 ]
 
 
+const POSE_CONNECTIONS_SITUP = [
+  {
+      "start": 0,
+      "end": 1
+  },
+  {
+      "start": 0,
+      "end": 2
+  },
+  {
+      "start": 1,
+      "end": 3
+  },
+  {
+      "start": 2,
+      "end": 3
+  },
+  {
+      "start": 2,
+      "end": 4
+  },
+  {
+      "start": 4,
+      "end": 6
+  },
+  {
+      "start": 3,
+      "end": 5
+  },
+  {
+      "start": 5,
+      "end": 7
+  },
+]
 
 
 const POSE_CONNECTIONS_SQUAT = [
@@ -398,14 +432,16 @@ function drawBoundingBoxes(predictions, ctx) {
       lastVideoTime = video.currentTime
       poseLandmarker.detectForVideo(video, startTimeMs, result => {
         for (const landmark of result.landmarks) {
-          var newLandmark = landmark.slice(11);
+          landmark.splice(0, 11)
+          landmark.splice(2, 10);
+          landmark.splice(7);
+          var newLandmark = landmark;
           drawingUtils.drawLandmarks(newLandmark, {
             radius: data => DrawingUtils.lerp(data.from.z, -0.15, 0.1, 5, 1)
           })
           
-          drawingUtils.drawConnectors(newLandmark, POSE_CONNECTIONS_NO_FACE, { color: "#FFFFFF", lineWidth: 5 })
-
-          if (1 == 2) {
+          if (currentStatusSitup != "nothing" && (newLandmark[0].y < newLandmark[4].y || newLandmark[0].y < newLandmark[5].y || newLandmark[1].y < newLandmark[4].y || newLandmark[1].y < newLandmark[5].y)) {
+            drawingUtils.drawConnectors(newLandmark, POSE_CONNECTIONS_SITUP, { color: "#00FF00", lineWidth: 5 })
             if (currentVerifySitup >= verifyTimesSitup && currentStatusSitup == "sit-down") {
               countSitup = countSitup + 1;
               document.getElementById("situpCount").innerHTML = countSitup;
@@ -416,7 +452,8 @@ function drawBoundingBoxes(predictions, ctx) {
               currentVerifySitup = 0;
               newStatusSitup = "sit-up";
             }
-          } else if (1 == 2) {
+          } else {
+            drawingUtils.drawConnectors(newLandmark, POSE_CONNECTIONS_SITUP, { color: "#FFFFFF", lineWidth: 5 })
             if (currentVerifySitup >= verifyTimesSitup && currentStatusSitup == "sit-up") {
               currentStatusSitup = "sit-down";
             } else if(newStatusSitup == "sit-down") {
@@ -424,6 +461,9 @@ function drawBoundingBoxes(predictions, ctx) {
             } else {
               currentVerifySitup = 0;
               newStatusSitup = "sit-down";
+              if (currentStatusSitup == "nothing" && (newLandmark[0].y > newLandmark[4].y || newLandmark[0].y > newLandmark[5].y || newLandmark[1].y > newLandmark[4].y || newLandmark[1].y > newLandmark[5].y)) {
+                currentStatusSitup = "sit-down";
+              }
             }
           }
         }
