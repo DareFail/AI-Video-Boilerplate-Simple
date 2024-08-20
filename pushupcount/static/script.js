@@ -185,6 +185,68 @@ const POSE_CONNECTIONS_NO_FACE = [
   }
 ]
 
+
+
+
+const POSE_CONNECTIONS_SQUAT = [
+  {
+      "start": 0,
+      "end": 1
+  },
+  {
+      "start": 0,
+      "end": 2
+  },
+  {
+      "start": 1,
+      "end": 3
+  },
+  {
+      "start": 2,
+      "end": 3
+  },
+  {
+      "start": 2,
+      "end": 4
+  },
+  {
+      "start": 4,
+      "end": 6
+  },
+  {
+      "start": 6,
+      "end": 8
+  },
+  {
+      "start": 8,
+      "end": 10
+  },
+  {
+      "start": 6,
+      "end": 10
+  },
+  {
+      "start": 3,
+      "end": 5
+  },
+  {
+      "start": 5,
+      "end": 7
+  },
+  {
+      "start": 7,
+      "end": 9
+  },
+  {
+      "start": 9,
+      "end": 11
+  },
+  {
+      "start": 11,
+      "end": 7
+  },
+]
+
 function detectFrame() {
   // On first run, initialize a canvas
   // On all runs, run inference using a video frame
@@ -203,25 +265,6 @@ function detectFrame() {
     } else {
       ctx_input.drawImage(video_camera, 0, 0, canvas_input.width, canvas_input.height);
     }
-  }
-
-  if (runningMode === "IMAGE") {
-    runningMode = "VIDEO"
-    poseLandmarker.setOptions({ runningMode: "VIDEO" })
-  }
-  let startTimeMs = performance.now()
-  if (lastVideoTime !== video.currentTime) {
-    lastVideoTime = video.currentTime
-    poseLandmarker.detectForVideo(video, startTimeMs, result => {
-      for (const landmark of result.landmarks) {
-        var newLandmark = landmark.slice(11);
-        drawingUtils.drawLandmarks(newLandmark, {
-          radius: data => DrawingUtils.lerp(data.from.z, -0.15, 0.1, 5, 1)
-        })
-        
-        drawingUtils.drawConnectors(newLandmark, POSE_CONNECTIONS_NO_FACE)
-      }
-    })
   }
 
   inferEngine.infer(modelWorkerId, new inferencejs.CVImage(video)).then(function(predictions) {
@@ -256,7 +299,51 @@ function detectFrame() {
 
 function drawBoundingBoxes(predictions, ctx) {
 
+
   if (model_type == "pushups") {
+
+
+    if (runningMode === "IMAGE") {
+      runningMode = "VIDEO"
+      poseLandmarker.setOptions({ runningMode: "VIDEO" })
+    }
+    let startTimeMs = performance.now()
+    if (lastVideoTime !== video.currentTime) {
+      lastVideoTime = video.currentTime
+      poseLandmarker.detectForVideo(video, startTimeMs, result => {
+        for (const landmark of result.landmarks) {
+          var newLandmark = landmark.slice(11);
+          drawingUtils.drawLandmarks(newLandmark, {
+            radius: data => DrawingUtils.lerp(data.from.z, -0.15, 0.1, 5, 1)
+          })
+          
+          drawingUtils.drawConnectors(newLandmark, POSE_CONNECTIONS_NO_FACE, { color: "#FFFFFF", lineWidth: 5 })
+  
+          
+          if (1 == 2) {
+            if (currentVerifyPushup >= verifyTimesPushup && currentStatusPushup == "push-downs") {
+              countPushup = countPushup + 1;
+              document.getElementById("pushupCount").innerHTML = countPushup;
+              currentStatusPushup = "push-ups";
+            } else if(newStatusPushup == "push-ups") {
+              currentVerifyPushup = currentVerifyPushup + 1;
+            } else {
+              currentVerifyPushup = 0;
+              newStatusPushup = "push-ups";
+            }
+          } else if (1 == 2) {
+            if (currentVerifyPushup >= verifyTimesPushup && currentStatusPushup == "push-ups") {
+              currentStatusPushup = "push-downs";
+            } else if(newStatusPushup == "push-downs") {
+              currentVerifyPushup = currentVerifyPushup + 1;
+            } else {
+              currentVerifyPushup = 0;
+              newStatusPushup = "push-downs";
+            }
+          }
+        }
+      })
+    }
 
     for (var i = 0; i < predictions.length && i < 1; i++) {
       var confidence = predictions[i].confidence;
@@ -294,32 +381,56 @@ function drawBoundingBoxes(predictions, ctx) {
       // Text stays the same regardless of mirroring
       ctx.font = "25px Arial";
       ctx.fillText(prediction.class + " " + Math.round(confidence * 100) + "%", x, y - 10);
+
+      
   
   
 
-      if (predictions[i].class == "push-ups") {
-        if (currentVerifyPushup >= verifyTimesPushup && currentStatusPushup == "push-downs") {
-          countPushup = countPushup + 1;
-          document.getElementById("pushupCount").innerHTML = countPushup;
-          currentStatusPushup = "push-ups";
-        } else if(newStatusPushup == "push-ups") {
-          currentVerifyPushup = currentVerifyPushup + 1;
-        } else {
-          currentVerifyPushup = 0;
-          newStatusPushup = "push-ups";
-        }
-      } else if (predictions[i].class == "push-downs") {
-        if (currentVerifyPushup >= verifyTimesPushup && currentStatusPushup == "push-ups") {
-          currentStatusPushup = "push-downs";
-        } else if(newStatusPushup == "push-downs") {
-          currentVerifyPushup = currentVerifyPushup + 1;
-        } else {
-          currentVerifyPushup = 0;
-          newStatusPushup = "push-downs";
-        }
-      }
     }
   } else if (model_type == "situps") {
+
+    if (runningMode === "IMAGE") {
+      runningMode = "VIDEO"
+      poseLandmarker.setOptions({ runningMode: "VIDEO" })
+    }
+    let startTimeMs = performance.now()
+    if (lastVideoTime !== video.currentTime) {
+      lastVideoTime = video.currentTime
+      poseLandmarker.detectForVideo(video, startTimeMs, result => {
+        for (const landmark of result.landmarks) {
+          var newLandmark = landmark.slice(11);
+          drawingUtils.drawLandmarks(newLandmark, {
+            radius: data => DrawingUtils.lerp(data.from.z, -0.15, 0.1, 5, 1)
+          })
+          
+          drawingUtils.drawConnectors(newLandmark, POSE_CONNECTIONS_NO_FACE, { color: "#FFFFFF", lineWidth: 5 })
+
+          if (1 == 2) {
+            if (currentVerifySitup >= verifyTimesSitup && currentStatusSitup == "sit-down") {
+              countSitup = countSitup + 1;
+              document.getElementById("situpCount").innerHTML = countSitup;
+              currentStatusSitup = "sit-up";
+            } else if(newStatusSitup == "sit-up") {
+              currentVerifySitup = currentVerifySitup + 1;
+            } else {
+              currentVerifySitup = 0;
+              newStatusSitup = "sit-up";
+            }
+          } else if (1 == 2) {
+            if (currentVerifySitup >= verifyTimesSitup && currentStatusSitup == "sit-up") {
+              currentStatusSitup = "sit-down";
+            } else if(newStatusSitup == "sit-down") {
+              currentVerifySitup = currentVerifySitup + 1;
+            } else {
+              currentVerifySitup = 0;
+              newStatusSitup = "sit-down";
+            }
+          }
+        }
+      })
+    }
+
+
     let filteredPredictions = predictions.filter(prediction => prediction.class.toLowerCase().includes("sit"));
 
     for (var i = 0; i < filteredPredictions.length && i < 1; i++) {
@@ -359,32 +470,54 @@ function drawBoundingBoxes(predictions, ctx) {
       // Text stays the same regardless of mirroring
       ctx.font = "25px Arial";
       ctx.fillText(prediction.class + " " + Math.round(confidence * 100) + "%", x, y - 10);
-  
-  
-      if (filteredPredictions[i].class == "sit-up") {
-        if (currentVerifySitup >= verifyTimesSitup && currentStatusSitup == "sit-down") {
-          countSitup = countSitup + 1;
-          document.getElementById("situpCount").innerHTML = countSitup;
-          currentStatusSitup = "sit-up";
-        } else if(newStatusSitup == "sit-up") {
-          currentVerifySitup = currentVerifySitup + 1;
-        } else {
-          currentVerifySitup = 0;
-          newStatusSitup = "sit-up";
-        }
-      } else if (filteredPredictions[i].class == "sit-down") {
-        if (currentVerifySitup >= verifyTimesSitup && currentStatusSitup == "sit-up") {
-          currentStatusSitup = "sit-down";
-        } else if(newStatusSitup == "sit-down") {
-          currentVerifySitup = currentVerifySitup + 1;
-        } else {
-          currentVerifySitup = 0;
-          newStatusSitup = "sit-down";
-        }
-      }
+
     }
 
   } else if (model_type == "squats") {
+  
+      if (runningMode === "IMAGE") {
+        runningMode = "VIDEO"
+        poseLandmarker.setOptions({ runningMode: "VIDEO" })
+      }
+      let startTimeMs = performance.now()
+      if (lastVideoTime !== video.currentTime) {
+        lastVideoTime = video.currentTime
+        poseLandmarker.detectForVideo(video, startTimeMs, result => {
+          for (const landmark of result.landmarks) {
+            landmark.splice(0, 11)
+            landmark.splice(2, 10);
+            var newLandmark = landmark;
+            drawingUtils.drawLandmarks(newLandmark, {
+              radius: data => DrawingUtils.lerp(data.from.z, -0.15, 0.1, 5, 1)
+            })
+
+
+            if (newLandmark[2].y > newLandmark[4].y || newLandmark[2].y > newLandmark[5].y || newLandmark[3].y > newLandmark[4].y || newLandmark[3].y > newLandmark[5].y) {
+              drawingUtils.drawConnectors(newLandmark, POSE_CONNECTIONS_SQUAT, { color: "#00FF00", lineWidth: 5 })
+              if (currentVerifySquat >= verifyTimesSquat && currentStatusSquat == "squat-down") {
+                countSquat = countSquat + 1;
+                document.getElementById("squatCount").innerHTML = countSquat;
+                currentStatusSquat = "squat-up";
+              } else if(newStatusSquat == "squat-up") {
+                currentVerifySquat = currentVerifySquat + 1;
+              } else {
+                currentVerifySquat = 0;
+                newStatusSquat = "squat-up";
+              }
+            } else {
+              drawingUtils.drawConnectors(newLandmark, POSE_CONNECTIONS_SQUAT, { color: "#FFFFFF", lineWidth: 5 })
+              if (currentVerifySquat >= verifyTimesSquat && currentStatusSquat == "squat-up") {
+                currentStatusSquat = "squat-down";
+              } else if(newStatusSquat == "squat-down") {
+                currentVerifySquat = currentVerifySquat + 1;
+              } else {
+                currentVerifySquat = 0;
+                newStatusSquat = "squat-down";
+              }
+            }
+          }
+        })
+      }
 
       let filteredPredictions = predictions.filter(prediction => prediction.class.toLowerCase().includes("squat"));
 
@@ -424,29 +557,6 @@ function drawBoundingBoxes(predictions, ctx) {
         // Text stays the same regardless of mirroring
         ctx.font = "25px Arial";
         ctx.fillText(prediction.class + " " + Math.round(confidence * 100) + "%", x, y - 10);
-  
-        
-      if (filteredPredictions[i].class == "squat-up") {
-        if (currentVerifySquat >= verifyTimesSquat && currentStatusSquat == "squat-down") {
-          countSquat = countSquat + 1;
-          document.getElementById("squatCount").innerHTML = countSquat;
-          currentStatusSquat = "squat-up";
-        } else if(newStatusSquat == "squat-up") {
-          currentVerifySquat = currentVerifySquat + 1;
-        } else {
-          currentVerifySquat = 0;
-          newStatusSquat = "squat-up";
-        }
-      } else if (filteredPredictions[i].class == "squat-down") {
-        if (currentVerifySquat >= verifyTimesSquat && currentStatusSquat == "squat-up") {
-          currentStatusSquat = "squat-down";
-        } else if(newStatusSquat == "squat-down") {
-          currentVerifySquat = currentVerifySquat + 1;
-        } else {
-          currentVerifySquat = 0;
-          newStatusSquat = "squat-down";
-        }
-      }
     }
 
   }
