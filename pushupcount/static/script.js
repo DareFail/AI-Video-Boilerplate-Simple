@@ -23,11 +23,12 @@ var video_camera;
 
 // Pushups
 var countPushup = 0;
-var currentStatusPushup = "push-ups"
+var currentStatusPushup = "nothing"
 
 const verifyTimesPushup = 10;
 var currentVerifyPushup = 0;
-var newStatusPushup = "push-ups";
+var newStatusPushup = "nothing";
+const shoulderOffset = 0;
 
 // Situps
 var countSitup = 0;
@@ -78,7 +79,7 @@ let runningMode = "IMAGE"
 const drawingUtils = new DrawingUtils(ctx)
 let lastVideoTime = -1
 
-const POSE_CONNECTIONS_NO_FACE = [
+const POSE_CONNECTIONS_PUSHUP = [
   {
       "start": 0,
       "end": 1
@@ -92,22 +93,6 @@ const POSE_CONNECTIONS_NO_FACE = [
       "end": 4
   },
   {
-      "start": 4,
-      "end": 6
-  },
-  {
-      "start": 4,
-      "end": 8
-  },
-  {
-      "start": 4,
-      "end": 10
-  },
-  {
-      "start": 6,
-      "end": 8
-  },
-  {
       "start": 1,
       "end": 3
   },
@@ -116,73 +101,33 @@ const POSE_CONNECTIONS_NO_FACE = [
       "end": 5
   },
   {
-      "start": 5,
-      "end": 7
-  },
-  {
-      "start": 5,
-      "end": 9
-  },
-  {
-      "start": 5,
-      "end": 11
-  },
-  {
-      "start": 7,
-      "end": 9
-  },
-  {
       "start": 0,
-      "end": 12
+      "end": 6
   },
   {
       "start": 1,
-      "end": 13
+      "end": 7
   },
   {
-      "start": 12,
-      "end": 13
+      "start": 6,
+      "end": 7
   },
   {
-      "start": 12,
-      "end": 14
+      "start": 6,
+      "end": 8
   },
   {
-      "start": 13,
-      "end": 15
+      "start": 7,
+      "end": 8
   },
   {
-      "start": 14,
-      "end": 16
+      "start": 8,
+      "end": 10
   },
   {
-      "start": 15,
-      "end": 17
+      "start": 9,
+      "end": 11
   },
-  {
-      "start": 16,
-      "end": 18
-  },
-  {
-      "start": 17,
-      "end": 19
-  },
-  {
-      "start": 18,
-      "end": 20
-  },
-  {
-      "start": 19,
-      "end": 21
-  },
-  {
-      "start": 16,
-      "end": 20
-  },
-  {
-      "start": 17,
-      "end": 21
-  }
 ]
 
 
@@ -336,7 +281,6 @@ function drawBoundingBoxes(predictions, ctx) {
 
   if (model_type == "pushups") {
 
-
     if (runningMode === "IMAGE") {
       runningMode = "VIDEO"
       poseLandmarker.setOptions({ runningMode: "VIDEO" })
@@ -346,15 +290,16 @@ function drawBoundingBoxes(predictions, ctx) {
       lastVideoTime = video.currentTime
       poseLandmarker.detectForVideo(video, startTimeMs, result => {
         for (const landmark of result.landmarks) {
-          var newLandmark = landmark.slice(11);
+          landmark.splice(0, 11);
+          landmark.splice(6, 7);
+          landmark.splice(11);
+          var newLandmark = landmark;
           drawingUtils.drawLandmarks(newLandmark, {
             radius: data => DrawingUtils.lerp(data.from.z, -0.15, 0.1, 5, 1)
-          })
+          })          
           
-          drawingUtils.drawConnectors(newLandmark, POSE_CONNECTIONS_NO_FACE, { color: "#FFFFFF", lineWidth: 5 })
-  
-          
-          if (1 == 2) {
+          if (currentStatusPushup != "nothing" && (newLandmark[2].y < newLandmark[0].y || newLandmark[2].y < newLandmark[1].y || newLandmark[3].y < newLandmark[0].y || newLandmark[3].y < newLandmark[1].y)) {
+            drawingUtils.drawConnectors(newLandmark, POSE_CONNECTIONS_PUSHUP, { color: "#00FF00", lineWidth: 5 })
             if (currentVerifyPushup >= verifyTimesPushup && currentStatusPushup == "push-downs") {
               countPushup = countPushup + 1;
               document.getElementById("pushupCount").innerHTML = countPushup;
@@ -365,7 +310,11 @@ function drawBoundingBoxes(predictions, ctx) {
               currentVerifyPushup = 0;
               newStatusPushup = "push-ups";
             }
-          } else if (1 == 2) {
+          } else if (currentStatusPushup == "nothing" && (newLandmark[2].y > (newLandmark[0].y + shoulderOffset) || newLandmark[2].y > (newLandmark[1].y + shoulderOffset) || newLandmark[3].y > (newLandmark[0].y + shoulderOffset) || newLandmark[3].y > (newLandmark[1].y + shoulderOffset))) {
+            drawingUtils.drawConnectors(newLandmark, POSE_CONNECTIONS_PUSHUP, { color: "#FFFFFF", lineWidth: 5 })
+            currentStatusPushup = "push-downs";
+          } else {
+            drawingUtils.drawConnectors(newLandmark, POSE_CONNECTIONS_PUSHUP, { color: "#FFFFFF", lineWidth: 5 })
             if (currentVerifyPushup >= verifyTimesPushup && currentStatusPushup == "push-ups") {
               currentStatusPushup = "push-downs";
             } else if(newStatusPushup == "push-downs") {
@@ -452,6 +401,9 @@ function drawBoundingBoxes(predictions, ctx) {
               currentVerifySitup = 0;
               newStatusSitup = "sit-up";
             }
+          } else if (currentStatusSitup == "nothing" && (newLandmark[0].y > newLandmark[4].y || newLandmark[0].y > newLandmark[5].y || newLandmark[1].y > newLandmark[4].y || newLandmark[1].y > newLandmark[5].y)) {
+            drawingUtils.drawConnectors(newLandmark, POSE_CONNECTIONS_SITUP, { color: "#FFFFFF", lineWidth: 5 })
+            currentStatusSitup = "sit-down";
           } else {
             drawingUtils.drawConnectors(newLandmark, POSE_CONNECTIONS_SITUP, { color: "#FFFFFF", lineWidth: 5 })
             if (currentVerifySitup >= verifyTimesSitup && currentStatusSitup == "sit-up") {
@@ -461,9 +413,6 @@ function drawBoundingBoxes(predictions, ctx) {
             } else {
               currentVerifySitup = 0;
               newStatusSitup = "sit-down";
-              if (currentStatusSitup == "nothing" && (newLandmark[0].y > newLandmark[4].y || newLandmark[0].y > newLandmark[5].y || newLandmark[1].y > newLandmark[4].y || newLandmark[1].y > newLandmark[5].y)) {
-                currentStatusSitup = "sit-down";
-              }
             }
           }
         }
