@@ -426,6 +426,8 @@ document.getElementById("webcamButton").addEventListener('click', function(event
   webcamInference("user");
 });
 document.getElementById("backCamButton").addEventListener('click', function(event){
+  shouldMirrorVideo = false;
+  document.getElementById("mirror").checked = false;
   webcamInference("environment");
 });
 document.getElementById("mirror").addEventListener('click', changeMirror);
