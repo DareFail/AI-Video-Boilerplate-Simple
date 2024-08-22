@@ -191,14 +191,14 @@ function handleFileSelect(evt) {
 
 }
 
-function webcamInference() {
+function webcamInference(facingMode) {
   // Ask for webcam permissions, then run main application.
   var loading = document.getElementById("loading");
   loading.style.display = "block";
 
   navigator.mediaDevices
     .getUserMedia({ 
-      video: { facingMode: "user" },
+      video: { facingMode: facingMode },
       audio: false
     })
     .then(function(stream) {
@@ -476,7 +476,12 @@ const createPoseLandmarker = async () => {
 createPoseLandmarker()
 
 
-document.getElementById("webcamButton").addEventListener('click', webcamInference);
+document.getElementById("webcamButton").addEventListener('click', function(event){
+  webcamInference("user");
+});
+document.getElementById("backCamButton").addEventListener('click', function(event){
+  webcamInference("environment");
+});
 document.getElementById("mirror").addEventListener('click', changeMirror);
 document.getElementById("clearArea").addEventListener('click', clearArea);
 document.getElementById("screenButton").addEventListener('click', screenInference);
@@ -484,3 +489,5 @@ document.getElementById("drawButton").addEventListener('click', drawInference);
 document.getElementById("uploadedFile").addEventListener('change', function(event){
   handleFileSelect(event);
 });
+document.getElementById("modelName").addEventListener('input', changeModelName);
+document.getElementById("versionNumber").addEventListener('input', changeVersionNumber);

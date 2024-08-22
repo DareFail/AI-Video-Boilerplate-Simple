@@ -60,16 +60,16 @@
 
     <div class="marginTop" id="videoSource">
       <div>
-          <input type="file" id="uploadedFile" accept=".mp4, .mov" onchange="handleFileSelect(event)">
+          <input type="file" id="uploadedFile" accept=".mp4, .mov">
       </div>
       <div class="marginTop">
-        <button onclick="screenInference()">Use Screen</button>
+        <button id="screenButton">Use Screen</button>
       </div>
       <div class="marginTop">
-        <button onclick="drawInference()">Draw</button>
+        <button id="drawButton">Draw</button>
       </div>
       <div class="marginTop">
-          <button onclick="webcamInference()">Start Webcam</button>
+          <button id="webcamButton">Start Webcam</button> &nbsp;&nbsp;&nbsp; <button id="backCamButton">Back Camera</button>
       </div>
 
       <div class="marginTop">
@@ -87,7 +87,7 @@
     </div>
 
     <div id="drawingTools">
-      <button onclick="clearArea()">Clear Area</button>
+      <button id="clearArea">Clear Area</button>
       Line width : 
       <select id="selWidth">
         <option value="1">1</option>
@@ -108,12 +108,12 @@
     <div id="settings">
       <div id="mirrorContainer">
         <label for="mirror">Flip Video (Mirror)</label><br>
-        <input type="checkbox" id="mirror" name="mirror" checked onclick="changeMirror()" />
+        <input type="checkbox" id="mirror" name="mirror" checked />
       </div>
 
       <div>
         <label for="confidence">Prediction Confidence <span id="confidenceValue"></span>%</label><br>
-        <input type="range" min="1" max="100" value="60" class="slider" id="confidence" onchange="changeConfidence()">
+        <input type="range" min="1" max="100" value="60" class="slider" id="confidence">
       </div>
     </div>
     
