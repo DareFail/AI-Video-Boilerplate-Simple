@@ -171,6 +171,12 @@ function detectFrame() {
         player.score += 1;
     }
 
+    ctx.beginPath();
+    ctx.moveTo(canvas.width / 2, 0);
+    ctx.lineTo(canvas.width / 2, canvas.height);
+    ctx.strokeStyle = '#FFFFFF'; // white color line
+    ctx.stroke();
+
     //printing scores
     ctx.fillStyle = '#FFFFFF';
     ctx.strokeStyle = '#000000'; // apply black color to strokes
@@ -632,8 +638,8 @@ const ball = {
   y: canvas.height/2,
   width: 100,
   height: 100,
-  dx:4,
-  dy:4,
+  dx: 8,
+  dy: 8,
   color: "#FFFFFF",
   update:function() {
     ctx.drawImage(charlieVideo, this.x, this.y, this.width, this.height);
