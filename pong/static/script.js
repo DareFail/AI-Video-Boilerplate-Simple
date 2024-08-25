@@ -100,12 +100,16 @@ function detectFrame() {
       var newLandmarks = landmarks;
       if (newLandmarks[0].x > 0.5) {
         // right
-        computer.x = newLandmarks[0].x * canvas.width;
-        computer.y = newLandmarks[1].y * canvas.height;
+        computer.x1 = newLandmarks[0].x * canvas.width;
+        computer.y1 = newLandmarks[0].y * canvas.height;
+        computer.x2 = newLandmarks[1].x * canvas.width;
+        computer.y2 = newLandmarks[1].y * canvas.height;
       } else {
         // left
-        player.x = newLandmarks[0].x * canvas.width;
-        player.y = newLandmarks[1].y * canvas.height;
+        player.x1 = newLandmarks[0].x * canvas.width;
+        player.y1 = newLandmarks[0].y * canvas.height;
+        player.x2 = newLandmarks[1].x * canvas.width;
+        player.y2 = newLandmarks[1].y * canvas.height;
       }
 
       drawingUtils.drawConnectors(newLandmarks, HAND_CONNECTIONS, {
@@ -122,51 +126,64 @@ function detectFrame() {
     
     ball.x += ball.dx;
     ball.y += ball.dy;
-    
-    if(player.y < 0) player.y = 0;
-    if(player.y + player.height > canvas.height) player.y = canvas.height - player.height;
-    if(computer.y < 0) computer.y = 0;
-    if(computer.y + computer.height > canvas.height) computer.y = canvas.height - computer.height;
 
-    if(ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0){
+    // Check if ball hits top or bottom wall
+    if(ball.y + ball.height > canvas.height || ball.y < 0) {
         ball.dy *= -1;
     }
-    
-    if(ball.y + ball.radius > player.y && ball.y - ball.radius < player.y + player.height && ball.dx < 0){
-        if(ball.x - ball.radius < player.x + player.width){
-            ball.dx *= -1;
-        }
-    }
-    
-    if(ball.y + ball.radius > computer.y && ball.y - ball.radius < computer.y + computer.height && ball.dx > 0){
-        if(ball.x + ball.radius > computer.x){
-            ball.dx *= -1;
-        }
+
+    // Player's paddle
+    let player_dx = player.x2 - player.x1;
+    let player_dy = player.y2 - player.y1;
+    let player_len = Math.sqrt(player_dx*player_dx + player_dy*player_dy);
+    player_dx /= player_len;
+    player_dy /= player_len;
+
+    let proj_len1 = (ball.x - player.x1)*player_dx + (ball.y - player.y1)*player_dy;
+
+    if(proj_len1 > 0 && proj_len1 < player_len && ball.dx < 0 && ball.x < player.x2) {
+        ball.dx *= -1;
     }
 
-    //score updates
-    if (ball.x + ball.radius < 0){
-        ball.x = canvas.width / 2;
-        ball.y = canvas.height / 2;
-        player.score +=1;
+    // Computer's paddle
+    let comp_dx = computer.x2 - computer.x1;
+    let comp_dy = computer.y2 - computer.y1;
+    let comp_len = Math.sqrt(comp_dx*comp_dx + comp_dy*comp_dy);
+    comp_dx /= comp_len;
+    comp_dy /= comp_len;
+
+    let proj_len2 = (ball.x - computer.x1)*comp_dx + (ball.y - computer.y1)*comp_dy;
+
+    if(proj_len2 > 0 && proj_len2 < comp_len && ball.dx > 0 && ball.x + ball.width > computer.x1) {
+        ball.dx *= -1;
     }
 
-    if (ball.x - ball.radius > canvas.width){
+    // Score updates
+    if (ball.x < 0){
         ball.x = canvas.width / 2;
         ball.y = canvas.height / 2;
-        computer.score +=1;
+        computer.score += 1;
+    }
+
+    if (ball.x + ball.width > canvas.width){
+        ball.x = canvas.width / 2;
+        ball.y = canvas.height / 2;
+        player.score += 1;
     }
 
     //printing scores
-    ctx.beginPath();
-    ctx.moveTo(canvas.width / 2, 0);
-    ctx.lineTo(canvas.width / 2, canvas.height);
-    ctx.strokeStyle = '#FFFFFF'; // white color line
-    ctx.stroke();
-    ctx.font = "20px Arial";
-    ctx.fillText("Left: " + player.score, 130, 30);
-    ctx.fillText("Right: " + computer.score, canvas.width - 180, 30);
-
+    ctx.fillStyle = '#FFFFFF';
+    ctx.strokeStyle = '#000000'; // apply black color to strokes
+    ctx.lineWidth = 5; // control the outline's thickness
+    ctx.font = "30px Arial";
+    
+    // draw with stroke (outline)
+    ctx.strokeText("Left: " + player.score, 130, 50); 
+    ctx.strokeText("Right: " + computer.score, canvas.width - 180, 50); 
+    
+    // draw with fill
+    ctx.fillText("Left: " + player.score, 130, 50);
+    ctx.fillText("Right: " + computer.score, canvas.width - 180, 50);
 
 
   inferEngine.infer(modelWorkerId, new inferencejs.CVImage(video)).then(function(predictions) {
@@ -575,44 +592,51 @@ document.getElementById("uploadedFile").addEventListener('change', function(even
 });
 
 
-
 const player = {
-  x: 0,
-  y: canvas.height / 2 - 50,
-  width: 10,
-  height: 190,
+  x1: 0,
+  y1: canvas.height / 2 - 95,
+  x2: 10,
+  y2: canvas.height / 2 + 95,
   color: "#FFFFFF",
-  dy: 2,
-  score: 63,
+  score: 0,
   update: function(){
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.x, this.y, this.width, this.height);
+    ctx.beginPath();
+    ctx.lineWidth = 10;
+    ctx.strokeStyle = this.color;
+    ctx.moveTo(this.x1, this.y1);
+    ctx.lineTo(this.x2, this.y2);
+    ctx.stroke();
   }
-}
+};
 
 const computer = {
-  x: canvas.width - 10,
-  y: canvas.height / 2 - 50,
-  width: 10,
-  height: 190,
+  x1: canvas.width - 90,
+  y1: canvas.height / 2 - 50,
+  x2: canvas.width - 10,
+  y2: canvas.height / 2 + 50,
   color: "#FFFFFF",
-  dy: 2,
-  score: 2,
+  score: 0,
   update: function(){
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.x, this.y, this.width, this.height);
+    ctx.beginPath();
+    ctx.lineWidth = 10;
+    ctx.strokeStyle = this.color;
+    ctx.moveTo(this.x1, this.y1);
+    ctx.lineTo(this.x2, this.y2);
+    ctx.stroke();
   }
-}
+};
+
 
 const ball = {
   x: canvas.width/2,
   y: canvas.height/2,
-  radius: 100,
+  width: 100,
+  height: 100,
   dx:4,
   dy:4,
   color: "#FFFFFF",
   update:function() {
-      ctx.drawImage(charlieVideo, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
+    ctx.drawImage(charlieVideo, this.x, this.y, this.width, this.height);
   },
 }
 
