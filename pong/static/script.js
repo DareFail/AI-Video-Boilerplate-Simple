@@ -638,8 +638,8 @@ const ball = {
   y: canvas.height/2,
   width: 100,
   height: 100,
-  dx: 8,
-  dy: 8,
+  dx: 16,
+  dy: 16,
   color: "#FFFFFF",
   update:function() {
     ctx.drawImage(charlieVideo, this.x, this.y, this.width, this.height);
