@@ -21,7 +21,6 @@ var model_name = "rock-paper-scissors-sxsw";
 var model_version = 14;
 var video;
 var video_camera;
-let charlieVideo;
 
 var shouldMirrorVideo = true;
 
@@ -142,7 +141,8 @@ function detectFrame() {
     let proj_len1 = (ball.x - player.x1)*player_dx + (ball.y - player.y1)*player_dy;
 
     if(proj_len1 > 0 && proj_len1 < player_len && ball.dx < 0 && ball.x < player.x2) {
-        ball.dx *= -1;
+      let randomBounce = Math.random() - 0.5;
+      ball.dx = (ball.dx - randomBounce) * -1;
     }
 
     // Computer's paddle
@@ -155,7 +155,8 @@ function detectFrame() {
     let proj_len2 = (ball.x - computer.x1)*comp_dx + (ball.y - computer.y1)*comp_dy;
 
     if(proj_len2 > 0 && proj_len2 < comp_len && ball.dx > 0 && ball.x + ball.width > computer.x1) {
-        ball.dx *= -1;
+      let randomBounce = Math.random() - 0.5;
+      ball.dx = (ball.dx - randomBounce) * -1;
     }
 
     // Score updates
@@ -365,16 +366,6 @@ function handleInference(video) {
   video.onloadedmetadata = function() {
     video.play();
   }
-
-  charlieVideo = document.createElement('video');
-  charlieVideo.src = '/pong/static/charlie.mp4'; 
-  charlieVideo.load();
-  charlieVideo.play();
-
-  charlieVideo.oncanplaythrough = function() {
-    charlieVideo.muted = true;
-    charlieVideo.loop = true;
-  };
 
   // on full load, set the video height and width
   video.onplay = function() {
@@ -636,13 +627,17 @@ const computer = {
 const ball = {
   x: canvas.width/2,
   y: canvas.height/2,
-  width: 100,
-  height: 100,
-  dx: 16,
-  dy: 16,
+  width: 10,
+  height: 10,
+  dx: 17,
+  dy: 17,
   color: "#FFFFFF",
-  update:function() {
-    ctx.drawImage(charlieVideo, this.x, this.y, this.width, this.height);
+  outline: 5,
+  update: function () {
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(this.x - this.outline / 2, this.y - this.outline / 2, this.width + this.outline, this.height + this.outline);
+    ctx.fillStyle = this.color;
+    ctx.fillRect(this.x, this.y, this.width, this.height);
   },
 }
 
