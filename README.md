@@ -43,6 +43,9 @@ It is an extremely lightweight flask server that can be uploaded to popular clou
 
 ROBOFLOW_API_KEY=YOUR_ROBOFLOW_KEY_HERE
 
+# For the whiteboard, you need this key too
+OPENAI_API_KEY=YOUR_OPENAI_API_KEY_HERE
+
 ```
 
   
