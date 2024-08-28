@@ -22,6 +22,8 @@ var model_version = 10;
 var video;
 var video_camera;
 var currentStatus = "";
+var isSolving = false;
+var solution = "";
 
 var shouldMirrorVideo = true;
 
@@ -140,7 +142,7 @@ function detectFrame() {
 
 function drawBoundingBoxes(predictions, ctx) {
   for (var i = 0; i < predictions.length && i < 2; i++) {
-    if (predictions[i].class == "1" || predictions[i].class == "2" || predictions[i].class == "5" || (predictions[i].class == "start" && currentStatus == "stop") || (predictions[i].class == "start" && currentStatus == "erase")) {
+    if (predictions[i].class == "1" || predictions[i].class == "2" || predictions[i].class == "5") {
 
     
       var confidence = predictions[i].confidence;
@@ -180,17 +182,24 @@ function drawBoundingBoxes(predictions, ctx) {
       if (prediction.class == "1") {
         currentStatus = "draw";
         ctx.fillText("Draw " + Math.round(confidence * 100) + "%", x, y - 10);
-      } else if (prediction.class == "2") {
+      } else if (prediction.class == "2" && currentStatus == "stop") {
         currentStatus = "solve";
         ctx.fillText("Solve " + Math.round(confidence * 100) + "%", x, y - 10);
+        if (isSolving == false) {
+          isSolving = true;
+          sendImage(x + width / 2, y + height / 2);
+        }
       } else if (prediction.class == "5") {
         currentStatus = "stop";
         ctx.fillText("Stop " + Math.round(confidence * 100) + "%", x, y - 10);
-      } else if (prediction.class == "start" && currentStatus == "stop") {
-        currentStatus = "erase";
-        ctx.fillText("Erase " + Math.round(confidence * 100) + "%", x, y - 10);
-        solve_ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
+    }
+  }
+  if (predictions.length == 2) {
+    if (predictions[0].class == "5" && predictions[1].class == "5") {
+      currentStatus = "erase";
+      ctx.fillText("Erase " + Math.round(confidence * 100) + "%", x, y - 10);
+      solve_ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
   }
 }
@@ -507,6 +516,30 @@ const createHandLandmarker = async () => {
 createHandLandmarker()
 
 
+function sendImage(centerX, centerY) {
+  var canvas = document.getElementById('solve_canvas');
+  var imageData = canvas.toDataURL('image/png');
+
+  fetch('/whiteboard/solve/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ image: imageData })
+  })
+  .then(response => response.json())
+  .then(data => {
+    solution = data.response;
+    solve_ctx.fillStyle = 'blue';
+    solve_ctx.font = '100px Arial'
+    solve_ctx.fillText(solution, centerX, centerY);
+    isSolving = false;
+  })
+  .catch(error => {
+      console.error('Error:', error);
+  });
+};
+
 
 document.getElementById("webcamButton").addEventListener('click', function(event){
   webcamInference("user");
@@ -522,3 +555,5 @@ document.getElementById("screenButton").addEventListener('click', screenInferenc
 document.getElementById("uploadedFile").addEventListener('change', function(event){
   handleFileSelect(event);
 });
+
+

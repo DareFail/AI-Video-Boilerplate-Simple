@@ -112,27 +112,6 @@
     
     <!-- Load our application logic -->
     <script type="module" src="{{ url_for('whiteboard.static', filename='script.js') }}"></script>
-    <script>
-      function sendImage() {
-          var canvas = document.getElementById('input_canvas');
-          var imageData = canvas.toDataURL('image/png');
-
-          fetch('/whiteboard/solve/', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ image: imageData })
-          })
-          .then(response => response.json())
-          .then(data => {
-              document.getElementById('resultContainer').innerText = data.response;
-          })
-          .catch(error => {
-              console.error('Error:', error);
-          });
-      };
-  </script>
   </div>
 </body>
 
