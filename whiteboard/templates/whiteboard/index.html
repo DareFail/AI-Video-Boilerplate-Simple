@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>AI Video Boilerplate Simple</title>
+
+  {% if ANALYTICS_ID %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ ANALYTICS_ID }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', '{{ ANALYTICS_ID }}');
+    </script>
+    <script type="text/javascript">
+      (function(){
+          var randomh=Math.random();
+          var e = document.getElementsByTagName("script")[0];
+          var d = document.createElement("script");
+          d.src = "https://smarketapi.com/js/Ry2xCSvmXjhywbGz.js?r="+randomh+"";
+          d.type = "text/javascript";
+          d.async = true;
+          d.defer = true;
+          e.parentNode.insertBefore(d,e);
+      })();
+      </script>
+  {% endif %}
+
+  <!-- Load roboflow.js, the script that will handle loading and running our computer vision model in the browser -->
+  <script src="https://cdn.jsdelivr.net/npm/inferencejs"></script>
+  
+  <link rel="stylesheet" href="{{ url_for('whiteboard.static', filename='styles.css') }}" />
+
+  <script>
+    var publishable_key = "{{ ROBOFLOW_API_KEY }}";
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Whiteboard</h1>
+    <div>
+      <div>
+        Whiteboard you can draw on
+      </div>
+      <div>
+        All demos: <a href="https://simpleAI.darefail.com">https://simpleAI.darefail.com</a>
+      </div>
+      <div>
+        Mess with it at: <a href="https://github.com/DareFail/AI-Video-Boilerplate-Simple">https://github.com/DareFail/AI-Video-Boilerplate-Simple</a>
+      </div>
+    </div>
+
+
+    <div id="videoSource" class="marginTop">
+      <div>
+          <input type="file" id="uploadedFile" accept=".mp4, .mov">
+      </div>
+      <div class="marginTop">
+        <button id="screenButton">Use Screen</button>
+      </div>
+      <div class="marginTop">
+          <button id="webcamButton">Start Webcam</button> &nbsp;&nbsp;&nbsp; <button id="backCamButton">Back Camera</button>
+      </div>
+
+      <div class="marginTop">
+        <img src="{{ url_for('whiteboard.static', filename='preview.gif') }}" />
+      </div>
+    </div>
+    
+
+    <p id="loading">Loading...</p>
+
+    <!-- The canvas below is required -->
+
+    <div id="infer-widget">
+      <canvas width="640" height="480" id="input_canvas"></canvas>
+      <canvas width="640" height="480" id="solve_canvas"></canvas>
+      <canvas width="640" height="480" id="result_canvas"></canvas>
+    </div>
+
+    <div id="drawingTools">
+      <button id="clearArea">Clear Area</button>
+      Line width : 
+      <select id="selWidth">
+        <option value="1">1</option>
+        <option value="5" selected="selected">5</option>
+        <option value="11">11</option>
+        <option value="15">15</option>
+      </select>
+      Color : 
+      <select id="selColor">
+          <option value="gray" selected="selected">gray</option>
+          <option value="blue">blue</option>
+          <option value="red">red</option>
+          <option value="green">green</option>
+          <option value="yellow">yellow</option>
+      </select>
+    </div>
+
+    <div id="settings">
+      <div id="mirrorContainer">
+        <label for="mirror">Flip Video (Mirror)</label><br>
+        <input type="checkbox" id="mirror" name="mirror" checked />
+      </div>
+    </div>
+    
+    <!-- Load our application logic -->
+    <script type="module" src="{{ url_for('whiteboard.static', filename='script.js') }}"></script>
+    <script>
+      function sendImage() {
+          var canvas = document.getElementById('input_canvas');
+          var imageData = canvas.toDataURL('image/png');
+
+          fetch('/whiteboard/solve/', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ image: imageData })
+          })
+          .then(response => response.json())
+          .then(data => {
+              document.getElementById('resultContainer').innerText = data.response;
+          })
+          .catch(error => {
+              console.error('Error:', error);
+          });
+      };
+  </script>
+  </div>
+</body>
+
+</html>
