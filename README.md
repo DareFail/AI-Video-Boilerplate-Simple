@@ -107,7 +107,7 @@ To add your own app, the easiest way is to modify one of the existing ones.
 If you want to make a brand new one to add to the repo, follow these steps:
 *(Replace all {{APP_NAME_HERE}} with your new app name)*
 
-1. Copy the Template folder to the main directory and rename it
+1. Copy the XXXXX Template folder to the main directory and rename it
 2. In main.py, import your new folder name 
 ``` 
 "from  {{APP_NAME_HERE}}  import  {{APP_NAME_HERE}}"
@@ -118,7 +118,7 @@ app.register_blueprint({{APP_NAME_HERE}}, url_prefix='/{{UNIQUE_URL_HERE}}')
 ```
 from flask import Blueprint
 
-{{APP_NAME_HERE}}  = Blueprint('{{APP_NAME_HERE}}', __name__, template_folder='templates', static_folder='static')
+{{APP_NAME_HERE}}  = Blueprint('{{APP_NAME_HERE}}', __name__, template_folder='XXXXX', static_folder='static')
 
 from . import  views
 ```
@@ -140,13 +140,13 @@ ROBOFLOW_API_KEY=os.environ.get("ROBOFLOW_API_KEY")
 5. In {{APP_NAME_HERE}}/templates/{{APP_NAME_HERE}}/index.html:
  ```
 # Swap out
-# <link  rel="stylesheet"  href="{{ url_for('template.static', filename='styles.css') }}"  />
+# <link  rel="stylesheet"  href="{{ url_for('XXXXX.static', filename='styles.css') }}"  />
 # with:
 <link  rel="stylesheet"  href="{{ url_for('{{APP_NAME_HERE}}.static', filename='styles.css') }}"  />
 
 and 
 # Swap out 
-#<script  src="{{ url_for('template.static', filename='script.js') }}"></script>
+#<script  src="{{ url_for('XXXXX.static', filename='script.js') }}"></script>
 # with:
 #<script  src="{{ url_for('{{APP_NAME_HERE}}.static', filename='script.js') }}"></script>
  ```
