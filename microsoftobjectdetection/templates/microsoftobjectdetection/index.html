@@ -79,30 +79,27 @@
     </div>
 
     <p id="loading">Loading...</p>
-  </div>
-  
-  <div class="marginTop">
 
-    <!-- The canvas below is required -->
-
-    <div id="infer-widget">
+    <div id="infer-widget" class="marginTop">
       <canvas width="640" height="480" id="input_canvas"></canvas>
       <canvas width="640" height="480" id="result_canvas"></canvas>
     </div>
 
     <div id="drawingTools">
       <button id="clearArea">Clear Area</button>
-      <label>
-        Line width : 
+
+      <div class="marginTop">
+        Line width:
         <select id="selWidth">
           <option value="1">1</option>
           <option value="5" selected="selected">5</option>
           <option value="11">11</option>
           <option value="15">15</option>
         </select>
-      </label>
-      <label>
-        Color : 
+      </div>
+
+      <div>
+        Color:
         <select id="selColor">
             <option value="gray" selected="selected">gray</option>
             <option value="blue">blue</option>
@@ -110,7 +107,8 @@
             <option value="green">green</option>
             <option value="yellow">yellow</option>
         </select>
-      </label>
+      </div>
+
     </div>
 
     <div id="settings" class="marginTop">
@@ -122,10 +120,8 @@
       </div>
 
       <div>
-        <label for="confidence">
-          Prediction Confidence <span id="confidenceValue"></span>%
-          <input type="range" min="1" max="100" value="60" class="slider" id="confidence">
-        </label>
+        Prediction Confidence <span id="confidenceValue"></span>%
+        <input type="range" min="1" max="100" value="60" class="slider" id="confidence">
       </div>
     </div>
     

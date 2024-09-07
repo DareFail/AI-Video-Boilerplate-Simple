@@ -8,7 +8,8 @@ a {
 
 #infer-widget {
   width: fit-content;
-  margin: auto;
+  margin-left: auto;
+  margin-right: auto;
   display: none;
 }
 
@@ -24,7 +25,6 @@ a {
   margin-left: auto;
   margin-right: auto;
 }
-
 
 img {
   width: 100%;

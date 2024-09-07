@@ -2,6 +2,10 @@
   display: none;
 }
 
+a {
+  text-decoration: none;
+}
+
 #infer-widget {
   width: fit-content;
   margin-left: auto;
@@ -45,6 +49,14 @@ img {
   width: 100%;
 }
 
-.primary-link{
-  text-decoration: none;
+@keyframes glow {
+  0% {
+      text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #FFD700, 0 0 40px #FFD700;
+  }
+  50% {
+      text-shadow: 0 0 20px #FFD700, 0 0 30px #FFD700, 0 0 40px #FFD700, 0 0 50px #FFD700, 0 0 60px #FFD700;
+  }
+  100% {
+      text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #FFD700, 0 0 40px #FFD700;
+  }
 }

@@ -1,131 +1,34 @@
-html, body {
-  width: 100%;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-p, a {
-  line-height: 1.5em;
-}
-
-.container {
-  text-align: center;
-  margin-left: auto;
-  margin-right: auto;
-}
-
 #loading {
   display: none;
-}
-
-#settings {
-  margin-top: 30px;
-  margin-bottom: 100px;
-}
-
-h1, a {
-  color: #6706ce;
-}
-
-label {
-  font-weight: 50px;
 }
 
 a {
   text-decoration: none;
 }
 
-main {
-  width: 40em;
-  margin: auto;
-  text-align: center;
-}
-
-.styled-button {
-  color: #fff;
-  text-align: center;
-  background-color: #6706ce;
-  border: 1px solid #6706ce;
-  border-radius: 4px;
-  padding: 13px 20px;
-  line-height: 1.5em;
-  text-decoration: none;
-  display: block;
-  margin: 10px;
-  margin-bottom: 25px;
-  width: 100%;
-}
-
-.styled-button-turqouise {
-  border: none;
-  color: black;
-  background-color: #00ffce;
-}
-
 #infer-widget {
   width: fit-content;
-  margin: auto;
+  margin-left: auto;
+  margin-right: auto;
   display: none;
-}
-
-.links {
-  display: flex;
-  text-align: center;
-}
-
-.links:first-child {
-  flex: 0 50%;
-}
-
-.links:last-child {
-  flex: 1 50%;
-}
-
-#uploadedFile {
-  padding: 15px 25px;
-  font-size: 24px;
-  cursor: pointer;
-  text-align: center;
-  text-decoration: none;
-  transition: background-color 0.5s;
-  border-radius: 5px;
-  outline: none;
-  color: #fff;
-  background-color: #3e8e41;
-  border: none;
-  height: 70px;
-}
-
-#uploadedFile:hover {
-  background-color: #4CAF50;
-}
-
-#uploadedFile:active {
-  background-color: #3e8e41;
-  box-shadow: 0 5px #666;
-  transform: translateY(4px);
 }
 
 .marginTop {
   margin-top: 15px;
 }
 
-img {
-  width: 100%;
-  max-width: 600px;
+.centerAlign {
+  text-align: center;
 }
 
-.switch-toggle {
-  width: 308px;
+.centerMargins {
   margin-left: auto;
   margin-right: auto;
 }
 
-#squatCountContainer { 
-  display: none;
-}
-
-#situpCountContainer {
-  display: none;
+#previewImage {
+  width: 100%;
+  max-width: 600px;
 }
 
 #drawingTools {
@@ -136,4 +39,30 @@ img {
   display: block;
   position: absolute;
   z-index: 50;
+}
+
+#screenButton {
+  width: 100%;
+}
+
+#drawButton {
+  width: 100%;
+}
+
+#pushupCountContainer {
+  display: block;
+}
+
+#squatCountContainer {
+  display: none;
+}
+
+#situpCountContainer {
+  display: none;
+}
+
+.switch-toggle {
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
 }

@@ -696,6 +696,8 @@ function changeConfidence() {
 
 function changeModel(modelName) {
 
+  console.log(modelName);
+
   if (modelName == "pushup") {
     model_type = "pushups";
     document.getElementById("pushupCountContainer").style.display = "block";

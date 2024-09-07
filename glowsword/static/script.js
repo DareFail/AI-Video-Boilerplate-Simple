@@ -15,12 +15,12 @@ var model_version = 11;
 var video;
 var video_camera;
 
-var audio = new Audio(lightsaber_sound);
+var audio = new Audio(glowsword_sound);
 var scale = 1;
 
 var isFrame = 1;
 var isLightSaber = true;
-var lightsaber = new Image();
+var glowsword = new Image();
 var heightOfMask = 0; // Starting point of the mask assuming bottom of img
 var speed = 10; // Change the speed to suit your animations
 
@@ -145,7 +145,7 @@ function drawBoundingBoxes(predictions, ctx) {
       ctx.font = "25px Arial";
       ctx.fillText("Glowsword " + Math.round(confidence * 100) + "%", x, y - 10);
 
-      ctx.drawImage(lightsaber,
+      ctx.drawImage(glowsword,
         (x + (width / 3.5) ) / scale,
         (y - (height * 3.5)) / scale,
         ((width * 4) / scale),
@@ -180,7 +180,7 @@ function drawBoundingBoxes(predictions, ctx) {
           if (prediction.class == "Rock") {
               if (!isLightSaber) {
                   audio.play();
-                  lightsaber.src = lightsaber_light;
+                  glowsword.src = glowsword_light;
               }
               isLightSaber = true
           } else {

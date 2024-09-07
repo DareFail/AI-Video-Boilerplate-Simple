@@ -43,8 +43,9 @@
 </head>
 
 <body>
-  <div class="container">
+  <main class="container">
     <h1>Measure Speed</h1>
+    
     <div>
       <div>
         Current speed of any object detected
@@ -61,22 +62,22 @@
     </div>
 
 
-    <div class="marginTop" id="videoSource">
-      <h3>First:</h3>
+    <div id="videoSource" class="marginTop">
+      <h4>First:</h4>
+      <ol>
+        <li>Enter the universe model and version number. </li>
+        <li><a href="https://universe.roboflow.com/search?q=object+detection+model&t=metadata">Go to Universe</a> and click on any object detection model.</li>
+        <li>Then click "Model" look at the URL. https://universe.roboflow.com/username/<b>MODEL_NAME_HERE</b>/model/<b>VERSION_NUMBER_HERE</b></li>
+      </ol>
       <div>
-        <div>Enter the universe model and version number. </div>
-        <div><a href="https://universe.roboflow.com/search?q=object+detection+model&t=metadata">Go to Universe</a> and click on any object detection model.</div>
-        <div>Then click "Model" look at the URL. https://universe.roboflow.com/username/<b>MODEL_NAME_HERE</b>/model/<b>VERSION_NUMBER_HERE</b></div>
-      </div>
-      <div class="marginTop">
         <div>
-          Universe Model Name: <input id="modelName" value="rock-paper-scissors-sxsw">
+          Universe Model Name: <input id="modelName" value="microsoft-coco">
         </div>
-        <div class="marginTop">
-          Version Number: <input id="versionNumber" type="number" value="11">
+        <div>
+          Version Number: <input id="versionNumber" type="number" value="9">
         </div>
+        <h4>Then:</h4>
       </div>
-      <h3>Then:</h3>
       <div>
           <input type="file" id="uploadedFile" accept=".mp4, .mov">
       </div>
@@ -86,55 +87,65 @@
       <div class="marginTop">
         <button id="drawButton">Draw</button>
       </div>
-      <div class="marginTop">
-          <button id="webcamButton">Start Webcam</button> &nbsp;&nbsp;&nbsp; <button id="backCamButton">Back Camera</button>
+      <div class="grid marginTop">
+        <button id="webcamButton">Start Webcam</button>
+        <button id="backCamButton">Back Camera</button>
       </div>
 
-      <div class="marginTop">
+      <div class="marginTop centerAlign">
         <img src="{{ url_for('speed.static', filename='preview.gif') }}" />
       </div>
     </div>
 
     <p id="loading">Loading...</p>
 
-    <div id="infer-widget">
+    <div id="infer-widget" class="marginTop">
       <canvas width="640" height="480" id="input_canvas"></canvas>
       <canvas width="640" height="480" id="result_canvas"></canvas>
     </div>
 
     <div id="drawingTools">
       <button id="clearArea">Clear Area</button>
-      Line width : 
-      <select id="selWidth">
-        <option value="1">1</option>
-        <option value="5" selected="selected">5</option>
-        <option value="11">11</option>
-        <option value="15">15</option>
-      </select>
-      Color : 
-      <select id="selColor">
-          <option value="gray" selected="selected">gray</option>
-          <option value="blue">blue</option>
-          <option value="red">red</option>
-          <option value="green">green</option>
-          <option value="yellow">yellow</option>
-      </select>
-    </div>
 
-    <div id="settings">
-      <div id="mirrorContainer">
-        <label for="mirror">Flip Video (Mirror)</label><br>
-        <input type="checkbox" id="mirror" name="mirror" checked />
+      <div class="marginTop">
+        Line width:
+        <select id="selWidth">
+          <option value="1">1</option>
+          <option value="5" selected="selected">5</option>
+          <option value="11">11</option>
+          <option value="15">15</option>
+        </select>
       </div>
 
       <div>
-        <label for="confidence">Prediction Confidence <span id="confidenceValue"></span>%</label><br>
+        Color:
+        <select id="selColor">
+            <option value="gray" selected="selected">gray</option>
+            <option value="blue">blue</option>
+            <option value="red">red</option>
+            <option value="green">green</option>
+            <option value="yellow">yellow</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div id="settings" class="marginTop">
+      <div id="mirrorContainer">
+        <label id="mirrorLabel" for="mirror">
+          Flip Video (Mirror)
+          <input type="checkbox" id="mirror" name="mirror" role="switch" checked />
+        </label>
+      </div>
+
+      <div>
+        Prediction Confidence <span id="confidenceValue"></span>%
         <input type="range" min="1" max="100" value="60" class="slider" id="confidence">
       </div>
     </div>
     
     <script src="{{ url_for('speed.static', filename='script.js') }}"></script>
-  </div>
+  </main>
 </body>
 
 </html>

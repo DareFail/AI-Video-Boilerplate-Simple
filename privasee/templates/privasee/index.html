@@ -62,9 +62,9 @@
 </head>
 
 <body>
-  <div class="container">
+  <main class="container">
     <h1>Priva-see</h1>
-
+    
     <div>
       <div>
         Start the webcam and then play the youtube video. When you look away it pauses and blurs.
@@ -82,16 +82,15 @@
 
     <div class="marginTop" id="videoSource">
       <div>
-        <input type="file" id="uploadedFile" accept=".mp4, .mov">
+          <input type="file" id="uploadedFile" accept=".mp4, .mov">
       </div>
-      <div class="marginTop">
-        <button id="screenButton">Use Screen</button>
-      </div>
+      <button id="screenButton">Use Screen</button>
       <div class="marginTop">
         <button id="drawButton">Draw</button>
       </div>
-      <div class="marginTop">
-          <button id="webcamButton">Start Webcam</button> &nbsp;&nbsp;&nbsp; <button id="backCamButton">Back Camera</button>
+      <div class="grid marginTop">
+          <button id="webcamButton">Start Webcam</button>
+          <button id="backCamButton">Back Camera</button>
       </div>
     </div>
     
@@ -101,30 +100,36 @@
 
     <p id="loading">Loading...</p>
 
-    <!-- The canvas below is required -->
 
-    <div id="infer-widget">
+    <div id="infer-widget" class="marginTop">
       <canvas width="640" height="480" id="input_canvas"></canvas>
       <canvas width="640" height="480" id="result_canvas"></canvas>
     </div>
 
     <div id="drawingTools">
       <button id="clearArea">Clear Area</button>
-      Line width : 
-      <select id="selWidth">
-        <option value="1">1</option>
-        <option value="5" selected="selected">5</option>
-        <option value="11">11</option>
-        <option value="15">15</option>
-      </select>
-      Color : 
-      <select id="selColor">
-          <option value="gray" selected="selected">gray</option>
-          <option value="blue">blue</option>
-          <option value="red">red</option>
-          <option value="green">green</option>
-          <option value="yellow">yellow</option>
-      </select>
+
+      <div class="marginTop">
+        Line width:
+        <select id="selWidth">
+          <option value="1">1</option>
+          <option value="5" selected="selected">5</option>
+          <option value="11">11</option>
+          <option value="15">15</option>
+        </select>
+      </div>
+
+      <div>
+        Color:
+        <select id="selColor">
+            <option value="gray" selected="selected">gray</option>
+            <option value="blue">blue</option>
+            <option value="red">red</option>
+            <option value="green">green</option>
+            <option value="yellow">yellow</option>
+        </select>
+      </div>
+
     </div>
 
 
@@ -138,36 +143,39 @@
         Looking: <span id="looking"></span>
     </div>
 
-    <div id="settings">
+    <div id="settings" class="marginTop">
       <div id="mirrorContainer">
-        <label for="mirror">Flip Video (Mirror)</label><br>
-        <input type="checkbox" id="mirror" name="mirror" checked />
+        <label id="mirrorLabel" for="mirror">
+          Flip Video (Mirror)
+          <input type="checkbox" id="mirror" name="mirror" role="switch" checked />
+        </label>
       </div>
 
       <div>
-        <label for="sensitivity">Sensitivity <span id="sensitivityValue"></span></label><br>
+        Sensitivity <span id="sensitivityValue"></span>
         <input type="range" min="1" max="50" value="25" class="slider" id="sensitivity" onchange="changeSensitivity()">
       </div>
 
       <div>
-        <label for="verticalOffset">Vertical Offset (Adjust until the dot is on your eyes when you stare at your eyes) <span id="verticalOffsetValue"></span></label><br>
+        Vertical Offset (Adjust until the dot is on your eyes when you stare at your eyes) <span id="verticalOffsetValue"></span>
         <input type="range" min="-500" max="1000" value="400" class="slider" id="verticalOffset" onchange="changeVerticalOffset()">
       </div>
 
       <div>
-        <label for="filterStrength">Reduce Jitter <span id="filterStrengthValue"></span></label><br>
+        Reduce Jitter <span id="filterStrengthValue"></span>
         <input type="range" min="1" max="99.9" value="91" class="slider" id="filterStrength" onchange="changeFilterStrength()">
       </div>
 
       <div>
-        <label for="dotSize">Dot Size <span id="dotSizeValue"></span></label><br>
+        Dot Size <span id="dotSizeValue"></span>
         <input type="range" min="1" max="500" value="5" class="slider" id="dotSize" onchange="changeDotSize()">
       </div>
+
     </div>
     
     <!-- Load our application logic -->
     <script src="{{ url_for('privasee.static', filename='script.js') }}"></script>
-  </div>
+  </main>
   <script src="https://www.youtube.com/iframe_api"></script>
 </body>
 
