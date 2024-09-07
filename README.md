@@ -4,7 +4,13 @@
 
 Hosted on Heroku for a live demo here: [https://simpleAI.darefail.com/](https://simpleAI.darefail.com/)
 
-Also, check out the AI Video Boilerplate for Chrome Extensions: [https://github.com/DareFail/AI-Video-Boilerplate-Chrome/](https://github.com/DareFail/AI-Video-Boilerplate-Chrome)
+## Other Repos
+
+**AI Video Boilerplate Pro** (scalable, dockerized, complete apps): [https://github.com/DareFail/AI-Video-Boilerplate-Pro/](https://github.com/DareFail/AI-Video-Boilerplate-Pro)
+
+**AI Video Boilerplate for Chrome Extensions**: [https://github.com/DareFail/AI-Video-Boilerplate-Chrome/](https://github.com/DareFail/AI-Video-Boilerplate-Chrome)
+
+
 
 
 ![demo](https://github.com/user-attachments/assets/fe61782f-acc9-42b0-9023-78bf97153718)
