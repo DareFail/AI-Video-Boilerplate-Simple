@@ -45,17 +45,19 @@
 
 <body>
   <main class="container">
+    <nav>
+      <ul>
+        <li><strong><a href="/">All Demos</a></strong></li>
+      </ul>
+      <ul>
+        <li><button class="secondary" onclick="location='https://github.com/DareFail/AI-Video-Boilerplate-Simple'">Github</button></li>
+      </ul>
+    </nav>
     <h1>Whiteboard</h1>
     
     <div>
       <div>
         Whiteboard you can draw on. Index finger to draw. Both palms out to clear the board. Peace/Victory sign to solve.
-      </div>
-      <div>
-        All demos: <a href="https://simpleAI.darefail.com">https://simpleAI.darefail.com</a>
-      </div>
-      <div>
-        Mess with it at: <a href="https://github.com/DareFail/AI-Video-Boilerplate-Simple">https://github.com/DareFail/AI-Video-Boilerplate-Simple</a>
       </div>
     </div>
 
@@ -73,13 +75,10 @@
       </div>
 
       <div class="marginTop centerAlign">
+        <h5 id="loading" aria-busy="true">Loading...</h5>
         <img src="{{ url_for('whiteboard.static', filename='preview.gif') }}" />
       </div>
     </div>
-    
-
-    <p id="loading">Loading...</p>
-
 
     <div id="infer-widget" class="marginTop">
       <canvas width="640" height="480" id="input_canvas"></canvas>
@@ -114,8 +113,10 @@
     </div>
 
     <div id="settings" class="marginTop">
+      <h4>Settings</h4>
+
       <div id="mirrorContainer">
-        <label id="mirrorLabel" for="mirror">
+        <label id="mirrorLabel">
           Flip Video (Mirror)
           <input type="checkbox" id="mirror" name="mirror" role="switch" checked />
         </label>

@@ -53,12 +53,6 @@
       <div>
         Counts your pushups live
       </div>
-      <div>
-        All demos: <a href="https://simpleAI.darefail.com">https://simpleAI.darefail.com</a>
-      </div>
-      <div>
-        Mess with it at: <a href="https://github.com/DareFail/AI-Video-Boilerplate-Simple">https://github.com/DareFail/AI-Video-Boilerplate-Simple</a>
-      </div>
     </div>
 
     <div class="marginTop">
@@ -101,15 +95,13 @@
         </div>
 
         <div class="marginTop centerAlign">
+          <h5 id="loading" aria-busy="true">Loading...</h5>
           <img id="previewImage" src="{{ url_for('pushupcount.static', filename='preview.gif') }}" />
         </div>
       </div>
     </div>
 
     <main class="pico container">
-
-      <p id="loading">Loading...</p>
-
 
       <div id="infer-widget" class="marginTop">
         <canvas width="640" height="480" id="input_canvas"></canvas>
@@ -144,7 +136,7 @@
 
       <div id="settings" class="marginTop">
         <div id="mirrorContainer">
-          <label id="mirrorLabel" for="mirror">
+          <label id="mirrorLabel">
             Flip Video (Mirror)
             <input type="checkbox" id="mirror" name="mirror" role="switch" checked />
           </label>

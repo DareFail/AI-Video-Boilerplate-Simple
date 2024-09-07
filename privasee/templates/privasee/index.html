@@ -63,6 +63,14 @@
 
 <body>
   <main class="container">
+    <nav>
+      <ul>
+        <li><strong><a href="/">All Demos</a></strong></li>
+      </ul>
+      <ul>
+        <li><button class="secondary" onclick="location='https://github.com/DareFail/AI-Video-Boilerplate-Simple'">Github</button></li>
+      </ul>
+    </nav>
     <h1>Priva-see</h1>
     
     <div>
@@ -133,41 +141,46 @@
     </div>
 
 
-    <div>
-        pitchValue: <span id="pitchValue"></span>
-    </div>
-    <div>
-        yawValue: <span id="yawValue"></span>
-    </div>
-    <div>
-        Looking: <span id="looking"></span>
+    <div class="marginTop">
+      <h4>Model Output</h4>
+      <div>
+          Pitch Value: <span id="pitchValue"></span>
+      </div>
+      <div>
+          Yaw Value: <span id="yawValue"></span>
+      </div>
+      <div>
+          Looking: <span id="looking"></span>
+      </div>
     </div>
 
     <div id="settings" class="marginTop">
+      <h4>Settings</h4>
+
       <div id="mirrorContainer">
-        <label id="mirrorLabel" for="mirror">
+        <label id="mirrorLabel">
           Flip Video (Mirror)
           <input type="checkbox" id="mirror" name="mirror" role="switch" checked />
         </label>
       </div>
 
       <div>
-        Sensitivity <span id="sensitivityValue"></span>
+        Sensitivity: <span id="sensitivityValue"></span>
         <input type="range" min="1" max="50" value="25" class="slider" id="sensitivity" onchange="changeSensitivity()">
       </div>
 
       <div>
-        Vertical Offset (Adjust until the dot is on your eyes when you stare at your eyes) <span id="verticalOffsetValue"></span>
+        Vertical Offset (Adjust until the dot is on your eyes when you stare at your eyes): <span id="verticalOffsetValue"></span>
         <input type="range" min="-500" max="1000" value="400" class="slider" id="verticalOffset" onchange="changeVerticalOffset()">
       </div>
 
       <div>
-        Reduce Jitter <span id="filterStrengthValue"></span>
+        Reduce Jitter: <span id="filterStrengthValue"></span>
         <input type="range" min="1" max="99.9" value="91" class="slider" id="filterStrength" onchange="changeFilterStrength()">
       </div>
 
       <div>
-        Dot Size <span id="dotSizeValue"></span>
+        Dot Size: <span id="dotSizeValue"></span>
         <input type="range" min="1" max="500" value="5" class="slider" id="dotSize" onchange="changeDotSize()">
       </div>
 
