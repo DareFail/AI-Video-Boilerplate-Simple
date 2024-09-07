@@ -63,7 +63,7 @@ git clone https://github.com/DareFail/AI-Video-Boilerplate-Simple.git
 cd AI-Video-Boilerplate
 
 ```
-3. Install poetry
+2. Install poetry
 
 ```sh
 
@@ -75,15 +75,22 @@ brew install poetry
 
 ```
 
-2. Install dependencies
-
+3. Enter Poetry Shell (needed to install dependencies and run server)
 ```sh
 
 poetry shell
 
 ```
 
-3. Start the server
+4. Install dependencies
+
+```sh
+
+poetry install
+
+```
+
+5. Start the server
 
 ```sh
 

@@ -92,6 +92,7 @@ main {
   color: #fff;
   background-color: #3e8e41;
   border: none;
+  height: 70px;
 }
 
 #uploadedFile:hover {
