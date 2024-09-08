@@ -11,6 +11,18 @@ a {
   text-decoration: none;
 }
 
+.youtubeIcon {
+  width: 35px;
+  height: 30px;
+  margin-bottom: 5px;
+}
+
+.twitterIcon {
+  width: 35px;
+  height: 30px;
+  margin-bottom: 6px;
+}
+
 #infer-widget {
   width: fit-content;
   margin-left: auto;

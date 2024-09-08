@@ -53,3 +53,15 @@ img {
   color: #373c44;
   text-decoration: none;
 }
+
+.youtubeIcon {
+  width: 35px;
+  height: 30px;
+  margin-bottom: 5px;
+}
+
+.twitterIcon {
+  width: 35px;
+  height: 30px;
+  margin-bottom: 6px;
+}
