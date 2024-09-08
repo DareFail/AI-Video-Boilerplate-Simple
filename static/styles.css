@@ -48,3 +48,8 @@ img {
 .primary-link{
   text-decoration: none;
 }
+
+.noLinkDecoration {
+  color: #373c44;
+  text-decoration: none;
+}
