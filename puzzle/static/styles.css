@@ -6,6 +6,10 @@ a {
   text-decoration: none;
 }
 
+.navButtonLink {
+  margin-left: -5px;
+}
+
 .noLinkDecoration {
   color: #373c44;
   text-decoration: none;

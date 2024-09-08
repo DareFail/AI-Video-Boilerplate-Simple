@@ -63,3 +63,7 @@ img {
   width: 35px;
   height: 30px;
 }
+
+.navButtonLink {
+  margin-left: -5px;
+}
