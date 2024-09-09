@@ -46,7 +46,7 @@
 </head>
 
 <body>
-  <main class="container pico">
+  <div class="container pico">
     <h1>Pushup Count</h1>
     
     <div>
@@ -60,7 +60,7 @@
       <h3 id="squatCountContainer">Squat Count: <span id="squatCount">0</span></h3>
       <h3 id="situpCountContainer">Situp Count: <span id="situpCount">0</span></h3>
     </div>
-  </main>
+  </div>
 
   <div>
 
@@ -101,7 +101,7 @@
       </div>
     </div>
 
-    <main class="pico container">
+    <div class="pico container">
 
       <div id="infer-widget" class="marginTop">
         <canvas width="640" height="480" id="input_canvas"></canvas>
@@ -147,7 +147,7 @@
           <input type="range" min="1" max="100" value="60" class="slider" id="confidence">
         </div>
       </div>
-    </main>
+    </div>
     
     <!-- Load our application logic -->
     <script type="module" src="{{ url_for('pushupcount.static', filename='script.js') }}"></script>
