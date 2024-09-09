@@ -67,3 +67,7 @@ img {
 #drawButton {
   width: 100%;
 }
+
+#speed {
+  text-align: center;
+}
