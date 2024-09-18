@@ -2,7 +2,7 @@
 
   This is a completely free Live AI Video boilerplate (Simple) for you to play with.  
 
-Hosted on Heroku for a live demo here: [https:///">simpleai.darefail.com</](https:///">simpleai.darefail.com</)
+Hosted on Heroku for a live demo here: [https://simpleai.darefail.com](https://simpleai.darefail.com)
 
 ## Other Repos
 
