@@ -68,6 +68,10 @@ img {
   width: 100%;
 }
 
+.bottomSection {
+  margin-bottom: 50px;
+}
+
 @keyframes glow {
   0% {
       text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #FFD700, 0 0 40px #FFD700;

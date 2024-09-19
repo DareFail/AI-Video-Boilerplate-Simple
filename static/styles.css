@@ -45,6 +45,10 @@ img {
   width: 100%;
 }
 
+.bottomSection {
+  margin-bottom: 50px;
+}
+
 .primary-link{
   text-decoration: none;
 }
