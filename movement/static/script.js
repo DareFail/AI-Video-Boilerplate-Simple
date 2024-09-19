@@ -86,14 +86,13 @@ function detectFrame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (video) {
+
       drawBoundingBoxes(predictions, ctx)
     }
   });
 }
 
 function drawBoundingBoxes(predictions, ctx) {
-
-  console.log(currentMotionBox);
 
   if (currentMotionBox != undefined) {
 
@@ -209,9 +208,6 @@ function webcamInference(facingMode) {
     });
 }
 
-
-
-
 function screenInference() {
   // Ask for webcam permissions, then run main application.
   var loading = document.getElementById("loading");
@@ -228,7 +224,7 @@ function screenInference() {
       video_camera.onloadedmetadata = function() {
         video_camera.play();
       }
-      
+
       document.getElementById("mirror").checked = false;
       shouldMirrorVideo = false;
 
@@ -301,14 +297,17 @@ function changeConfidence() {
   document.getElementById("confidenceValue").innerHTML = document.getElementById("confidence").value;
 }
 
+function changeModelName() {
+  model_name = document.getElementById("modelName").value;
+}
+
+function changeVersionNumber() {
+  model_version = parseInt(document.getElementById("versionNumber").value);
+}
 
 
-
-
-
-// Canvas
 var canvas_input = document.getElementById("input_canvas");
-var ctx_input = canvas_input.getContext('2d', { willReadFrequently: true });
+var ctx_input = canvas_input.getContext("2d");
 let isDrawing = false;
 let posX = 0;
 let posY = 0;
@@ -446,6 +445,7 @@ function clearArea() {
   ctx_input.clearRect(0, 0, canvas_input.width, canvas_input.height);
 }
 
+
 document.getElementById("webcamButton").addEventListener('click', function(event){
   webcamInference("user");
 });
@@ -462,9 +462,8 @@ document.getElementById("drawButton").addEventListener('click', drawInference);
 document.getElementById("uploadedFile").addEventListener('change', function(event){
   handleFileSelect(event);
 });
-
-
-
+document.getElementById("modelName").addEventListener('input', changeModelName);
+document.getElementById("versionNumber").addEventListener('input', changeVersionNumber);
 
 
 

@@ -59,26 +59,44 @@
         <li><a class="navButtonLink" href="https://github.com/DareFail/AI-Video-Boilerplate-Simple"><button class="contrast">Github</button></a></li>
       </ul>
     </nav>
-    <h1>Template</h1>
+    <h1>Detect Moving Objects</h1>
     
     <div>
       <div>
-        Description Here
+        Detects objects but only if they are moving
       </div>
     </div>
 
 
-    <div class="marginTop" id="videoSource">
+
+    <div id="videoSource" class="marginTop">
+      <h4>First:</h4>
+      <ol>
+        <li>Enter the universe model and version number. </li>
+        <li><a href="https://universe.roboflow.com/search?q=object+detection+model&t=metadata">Go to Universe</a> and click on any object detection model.</li>
+        <li>Then click "Model" look at the URL. https://universe.roboflow.com/username/<b>MODEL_NAME_HERE</b>/model/<b>VERSION_NUMBER_HERE</b></li>
+      </ol>
+      <div>
+        <div>
+          Universe Model Name: <input id="modelName" value="microsoft-coco">
+        </div>
+        <div>
+          Version Number: <input id="versionNumber" type="number" value="9">
+        </div>
+        <h4>Then:</h4>
+      </div>
       <div>
           <input type="file" id="uploadedFile" accept=".mp4, .mov">
       </div>
-      <button id="screenButton">Use Screen</button>
+      <div class="marginTop">
+        <button id="screenButton">Use Screen</button>
+      </div>
       <div class="marginTop">
         <button id="drawButton">Draw</button>
       </div>
       <div class="grid marginTop">
-          <button id="webcamButton">Start Webcam</button>
-          <button id="backCamButton">Back Camera</button>
+        <button id="webcamButton">Start Webcam</button>
+        <button id="backCamButton">Back Camera</button>
       </div>
 
       <div class="marginTop centerAlign">
