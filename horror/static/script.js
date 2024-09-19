@@ -86,9 +86,7 @@ function detectFrame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (video) {
-      //captureMotion() too fast
-      setInterval(captureMotion, 50);
-      drawBoundingBoxes(predictions, ctx)
+      //drawBoundingBoxes(predictions, ctx)
     }
   });
 }
@@ -96,26 +94,33 @@ function detectFrame() {
 function drawBoundingBoxes(predictions, ctx) {
 
   if (currentMotionBox != undefined) {
-    console.log(currentMotionBox);
 
     const scale = 10;
     const motion_x = currentMotionBox.x.min * scale + 1;
-		var motion_y = currentMotionBox.y.min * scale + 1;
-		var motion_width = (currentMotionBox.x.max - currentMotionBox.x.min) * scale;
-		var motion_height = (currentMotionBox.y.max - currentMotionBox.y.min) * scale;
+		const motion_y = currentMotionBox.y.min * scale + 1;
+		const motion_width = (currentMotionBox.x.max - currentMotionBox.x.min) * scale;
+		const motion_height = (currentMotionBox.y.max - currentMotionBox.y.min) * scale;
 
     ctx.rect(motion_x, motion_y, motion_width, motion_height);
     ctx.fillStyle = "rgba(0, 0, 0, 0)";
     ctx.fill();
     ctx.fillStyle = ctx.strokeStyle;
-    ctx.lineWidth = "4";
+    ctx.lineWidth = "8";
     
     ctx.strokeRect(motion_x, motion_y, motion_width, motion_height);
 
-    /*for (var i = 0; i < predictions.length; i++) {
+    
+
+    for (var i = 0; i < predictions.length; i++) {
       var confidence = predictions[i].confidence;
+
+      var prediction = predictions[i];
+      var x = prediction.bbox.x - prediction.bbox.width / 2;
+      var y = prediction.bbox.y - prediction.bbox.height / 2;
+      var width = prediction.bbox.width;
+      var height = prediction.bbox.height;
   
-      if (confidence < user_confidence) {
+      if (confidence < user_confidence || !isCornerInside(motion_x, motion_y, motion_width, motion_height, x, y, width, height)) {
         continue;
       }
   
@@ -131,12 +136,6 @@ function drawBoundingBoxes(predictions, ctx) {
         bounding_box_colors[predictions[i].class] = color;
       }
   
-      var prediction = predictions[i];
-      var x = prediction.bbox.x - prediction.bbox.width / 2;
-      var y = prediction.bbox.y - prediction.bbox.height / 2;
-      var width = prediction.bbox.width;
-      var height = prediction.bbox.height;
-  
       ctx.rect(x, y, width, height);
       ctx.fillStyle = "rgba(0, 0, 0, 0)";
       ctx.fill();
@@ -148,7 +147,7 @@ function drawBoundingBoxes(predictions, ctx) {
       // Text stays the same regardless of mirroring
       ctx.font = "25px Arial";
       ctx.fillText(prediction.class + " " + Math.round(confidence * 100) + "%", x, y - 10);
-    }*/
+    }
   }
   
 }
@@ -278,6 +277,11 @@ function handleInference(video) {
   ctx.scale(1, 1);
 
   clearArea();
+
+  const glitches = 100;
+  for (var i=0; i<glitches; i++) {
+    setInterval(captureMotion, 50);
+  }
 
   // Load the Roboflow model using the publishable_key set in index.html
   // and the model name and version set at the top of this file
@@ -487,8 +491,7 @@ var scoreThreshold = 16;
 
 
 function captureMotion() {
-	ctx_input.drawImage(video, 0, 0, canvas_input.width, canvas_input.height);
-	var captureImageData = ctx_input.getImageData(0, 0, canvas_input.width, canvas_input.height);
+  ctx_input.drawImage(video, 0, 0, canvas_input.width, canvas_input.height);
 
 	diffContext.globalCompositeOperation = 'difference';
 	diffContext.drawImage(video, 0, 0, diffWidth, diffHeight);
@@ -577,11 +580,22 @@ function calculateMotionPixels(motionPixels, x, y, pixelDiff) {
 	return motionPixels;
 }
 
-function getCaptureUrl(captureImageData) {
-	ctx_input.putImageData(captureImageData, 0, 0);
-	return canvas_input.toDataURL();
-}
+function isCornerInside(container_x, container_y, container_width, container_height, object_x, object_y, object_width, object_height) {
+ 
+  var containerEndX = container_x + container_width;
+  var containerEndY = container_y + container_height;
 
-function checkMotionPixel(motionPixels, x, y) {
-	return motionPixels && motionPixels[x] && motionPixels[x][y];
+  var objectEndX = object_x + object_width;
+  var objectEndY = object_y + object_height;
+
+  var leftTopPoint = ((object_x >= container_x && object_x <= containerEndX) && (object_y >= container_y && object_y <= containerEndY));
+  var leftBottomPoint = ((object_x >= container_x && object_x <= containerEndX) && (objectEndY >= container_y && objectEndY <= containerEndY));
+  var rightTopPoint = ((objectEndX >= container_x && objectEndX <= containerEndX) && (object_y >= container_y && object_y <= containerEndY));
+  var rightBottomPoint = ((objectEndX >= container_x && objectEndX <= containerEndX) && (objectEndY >= container_y && objectEndY <= containerEndY));
+
+  if (leftTopPoint || leftBottomPoint || rightTopPoint || rightBottomPoint) {
+      return true;
+  } else {
+      return false;
+  }
 }
