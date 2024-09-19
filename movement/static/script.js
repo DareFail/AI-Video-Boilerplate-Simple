@@ -110,6 +110,12 @@ function drawBoundingBoxes(predictions, ctx) {
     
     ctx.strokeRect(motion_x, motion_y, motion_width, motion_height);
 
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.fillRect(motion_x, motion_y, motion_width, motion_height);
+    ctx.globalCompositeOperation = 'source-over';
+
     
 
     for (var i = 0; i < predictions.length; i++) {
