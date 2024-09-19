@@ -1,0 +1,69 @@
+#loading {
+  display: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+.navButtonLink {
+  margin-left: -5px;
+}
+
+.noLinkDecoration {
+  color: #373c44;
+  text-decoration: none;
+}
+
+.youtubeIcon {
+  width: 35px;
+  height: 30px;
+}
+
+.twitterIcon {
+  width: 35px;
+  height: 30px;
+}
+
+#infer-widget {
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  display: none;
+}
+
+.marginTop {
+  margin-top: 15px;
+}
+
+.centerAlign {
+  text-align: center;
+}
+
+.centerMargins {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+img {
+  width: 100%;
+  max-width: 600px;
+}
+
+#drawingTools {
+  display: none;
+}
+
+#input_canvas {
+  display: block;
+  position: absolute;
+  z-index: 50;
+}
+
+#screenButton {
+  width: 100%;
+}
+
+#drawButton {
+  width: 100%;
+}

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>AI Video Boilerplate Simple</title>
+
+  {% if ANALYTICS_ID %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ ANALYTICS_ID }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', '{{ ANALYTICS_ID }}');
+    </script>
+    <script type="text/javascript">
+      (function(){
+          var randomh=Math.random();
+          var e = document.getElementsByTagName("script")[0];
+          var d = document.createElement("script");
+          d.src = "https://smarketapi.com/js/eLgnUuyTHbS4pL7n.js?r="+randomh+"";
+          d.type = "text/javascript";
+          d.async = true;
+          d.defer = true;
+          e.parentNode.insertBefore(d,e);
+      })();
+      </script>
+  {% endif %}
+
+  <!-- Load roboflow.js, the script that will handle loading and running our computer vision model in the browser -->
+  <script src="https://cdn.jsdelivr.net/npm/inferencejs"></script>
+
+  <link rel="stylesheet" href="{{ url_for('movement.static', filename='pico.min.css') }}" />
+  
+  <link rel="stylesheet" href="{{ url_for('movement.static', filename='styles.css') }}" />
+
+  <script>
+    var publishable_key = "{{ ROBOFLOW_API_KEY }}";
+  </script>
+</head>
+
+<body>
+
+  <div class="container">
+    <nav>
+      <ul>
+        <li><strong><a class="noLinkDecoration" href="/">simpleai.darefail.com</a></strong></li>
+      </ul>
+      <ul>
+        <li>
+          <a href="https://www.youtube.com/@darefail"><svg class="youtubeIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M549.7 124.1c-6.3-23.7-24.8-42.3-48.3-48.6C458.8 64 288 64 288 64S117.2 64 74.6 75.5c-23.5 6.3-42 24.9-48.3 48.6-11.4 42.9-11.4 132.3-11.4 132.3s0 89.4 11.4 132.3c6.3 23.7 24.8 41.5 48.3 47.8C117.2 448 288 448 288 448s170.8 0 213.4-11.5c23.5-6.3 42-24.2 48.3-47.8 11.4-42.9 11.4-132.3 11.4-132.3s0-89.4-11.4-132.3zm-317.5 213.5V175.2l142.7 81.2-142.7 81.2z"/></svg></a></li>
+        <li>
+          <a href="https://twitter.com/darefailed"><svg class="twitterIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M459.4 151.7c.3 4.5 .3 9.1 .3 13.6 0 138.7-105.6 298.6-298.6 298.6-59.5 0-114.7-17.2-161.1-47.1 8.4 1 16.6 1.3 25.3 1.3 49.1 0 94.2-16.6 130.3-44.8-46.1-1-84.8-31.2-98.1-72.8 6.5 1 13 1.6 19.8 1.6 9.4 0 18.8-1.3 27.6-3.6-48.1-9.7-84.1-52-84.1-103v-1.3c14 7.8 30.2 12.7 47.4 13.3-28.3-18.8-46.8-51-46.8-87.4 0-19.5 5.2-37.4 14.3-53 51.7 63.7 129.3 105.3 216.4 109.8-1.6-7.8-2.6-15.9-2.6-24 0-57.8 46.8-104.9 104.9-104.9 30.2 0 57.5 12.7 76.7 33.1 23.7-4.5 46.5-13.3 66.6-25.3-7.8 24.4-24.4 44.8-46.1 57.8 21.1-2.3 41.6-8.1 60.4-16.2-14.3 20.8-32.2 39.3-52.6 54.3z"/></svg></a>
+        </li>
+        <li><a class="navButtonLink" href="https://github.com/DareFail/AI-Video-Boilerplate-Simple"><button class="contrast">Github</button></a></li>
+      </ul>
+    </nav>
+    <h1>Template</h1>
+    
+    <div>
+      <div>
+        Description Here
+      </div>
+    </div>
+
+
+    <div class="marginTop" id="videoSource">
+      <div>
+          <input type="file" id="uploadedFile" accept=".mp4, .mov">
+      </div>
+      <button id="screenButton">Use Screen</button>
+      <div class="marginTop">
+        <button id="drawButton">Draw</button>
+      </div>
+      <div class="grid marginTop">
+          <button id="webcamButton">Start Webcam</button>
+          <button id="backCamButton">Back Camera</button>
+      </div>
+
+      <div class="marginTop centerAlign">
+        <h5 id="loading" aria-busy="true">Loading...</h5>
+        <img src="{{ url_for('movement.static', filename='preview.gif') }}" />
+      </div>
+    </div>
+
+    <div id="infer-widget" class="marginTop">
+      <canvas width="640" height="480" id="input_canvas"></canvas>
+      <canvas width="640" height="480" id="result_canvas"></canvas>
+    </div>
+
+    <div id="drawingTools">
+      <button id="clearArea">Clear Area</button>
+
+      <div class="marginTop">
+        Line width:
+        <select id="selWidth">
+          <option value="1">1</option>
+          <option value="5" selected="selected">5</option>
+          <option value="11">11</option>
+          <option value="15">15</option>
+        </select>
+      </div>
+
+      <div>
+        Color:
+        <select id="selColor">
+            <option value="gray" selected="selected">gray</option>
+            <option value="blue">blue</option>
+            <option value="red">red</option>
+            <option value="green">green</option>
+            <option value="yellow">yellow</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div id="settings" class="marginTop">
+      <h4>Settings</h4>
+
+      <div id="mirrorContainer">
+        <label id="mirrorLabel">
+          Flip Video (Mirror)
+          <input type="checkbox" id="mirror" name="mirror" role="switch" checked />
+        </label>
+      </div>
+
+      <div>
+        Prediction Confidence <span id="confidenceValue"></span>%
+        <input type="range" min="1" max="100" value="60" class="slider" id="confidence">
+      </div>
+    </div>
+    
+    <!-- Load our application logic -->
+    <script src="{{ url_for('movement.static', filename='script.js') }}"></script>
+  </div>
+</body>
+
+</html>

@@ -16,6 +16,8 @@ from puzzle import puzzle
 from speed import speed
 from pong import pong
 from whiteboard import whiteboard
+from movement import movement
+from horror import horror
 
 app = Flask(__name__)
 
@@ -36,6 +38,8 @@ app.register_blueprint(puzzle, url_prefix='/puzzle')
 app.register_blueprint(speed, url_prefix='/speed')
 app.register_blueprint(pong, url_prefix='/pong')
 app.register_blueprint(whiteboard, url_prefix='/whiteboard')
+app.register_blueprint(movement, url_prefix='/movement')
+app.register_blueprint(horror, url_prefix='/horror')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8000)
