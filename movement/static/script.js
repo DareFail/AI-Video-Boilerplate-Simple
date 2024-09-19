@@ -297,6 +297,16 @@ function changeConfidence() {
   document.getElementById("confidenceValue").innerHTML = document.getElementById("confidence").value;
 }
 
+function changePixelDiffThreshold() {
+  pixelDiffThreshold = document.getElementById("pixelDiffThreshold").value;
+  document.getElementById("pixelDiffThresholdValue").innerHTML = document.getElementById("pixelDiffThreshold").value;
+}
+
+function changeScoreThreshold() {
+  scoreThreshold = document.getElementById("scoreThreshold").value;
+  document.getElementById("scoreThresholdValue").innerHTML = document.getElementById("scoreThreshold").value;
+}
+
 function changeModelName() {
   model_name = document.getElementById("modelName").value;
 }
@@ -464,7 +474,8 @@ document.getElementById("uploadedFile").addEventListener('change', function(even
 });
 document.getElementById("modelName").addEventListener('input', changeModelName);
 document.getElementById("versionNumber").addEventListener('input', changeVersionNumber);
-
+document.getElementById('pixelDiffThreshold').addEventListener('input', changePixelDiffThreshold);
+document.getElementById('scoreThreshold').addEventListener('input', changeScoreThreshold);
 
 
 var isReadyToDiff = false;
