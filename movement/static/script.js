@@ -152,8 +152,8 @@ function drawBoundingBoxes(predictions, ctx) {
       ctx.strokeRect(x, y, width, height);
       
       // Text stays the same regardless of mirroring
-      ctx.font = "25px Arial";
-      ctx.fillText(prediction.class + " " + Math.round(confidence * 100) + "%", x, y - 10);
+      //ctx.font = "25px Arial";
+      //ctx.fillText(prediction.class + " " + Math.round(confidence * 100) + "%", x, y - 10);
     }
   }
   

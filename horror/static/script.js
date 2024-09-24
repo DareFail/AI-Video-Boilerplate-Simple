@@ -278,7 +278,7 @@ function handleInference(video) {
 
   clearArea();
 
-  const glitches = 100;
+  const glitches = 50;
   for (var i=0; i<glitches; i++) {
     setInterval(captureMotion, 50);
   }
