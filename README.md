@@ -1,17 +1,8 @@
-# AI-video-boilerplate-simple
+# AI-Video-Examples
 
   This is a completely free Live AI Video boilerplate (Simple) for you to play with.  
 
 Hosted on Heroku for a live demo here: [https://simpleai.darefail.com](https://simpleai.darefail.com)
-
-## Other Repos
-
-**AI Video Boilerplate Pro** (scalable, dockerized, complete apps): [https://github.com/DareFail/AI-Video-Boilerplate-Pro/](https://github.com/DareFail/AI-Video-Boilerplate-Pro)
-
-**AI Video Boilerplate for Chrome Extensions**: [https://github.com/DareFail/AI-Video-Boilerplate-Chrome/](https://github.com/DareFail/AI-Video-Boilerplate-Chrome)
-
-
-
 
 ![demo](https://github.com/user-attachments/assets/fe61782f-acc9-42b0-9023-78bf97153718)
 
@@ -64,7 +55,7 @@ OPENAI_API_KEY=YOUR_OPENAI_API_KEY_HERE
 
 ```sh
 
-git clone https://github.com/DareFail/AI-Video-Boilerplate-Simple.git
+git clone https://github.com/DareFail/AI-Video-Examples.git
 
 cd AI-Video-Boilerplate
 
@@ -206,4 +197,4 @@ Youtube: [How to Video coming soon](https://www.youtube.com/@darefail)
 
   
 
-Project Link: [https://github.com/DareFail/AI-Video-Boilerplate-Simple](https://github.com/DareFail/AI-Video-Boilerplate-Simple)
+Project Link: [https://github.com/DareFail/AI-Video-Examples](https://github.com/DareFail/AI-Video-Examples)
